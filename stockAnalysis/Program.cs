@@ -20,7 +20,7 @@ namespace stockAnalysis
         [STAThread]
         static void Main()
         {
-            List<Criteria> list = parseCriteria();
+            List<Criteria> list = parseCriteria.ParseCriteria();
 
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
@@ -90,110 +90,6 @@ namespace stockAnalysis
             DROP TABLE IF EXISTS tabDepartment;  -- Drop parent table last.
 
             ";
-        }
-
-
-        static List<Criteria> parseCriteria()
-        {
-            string line;
-            int colCounter = 0;
-            int entrieCount = 0;
-            string agKey = "";
-            string agSum = "";
-            string [] preProcess = new string[10];
-            string[] preAg = new string[10];
-            string[,] preValues = new string[10, 15];
-            string[] postProcess = new string[10];
-            string[] postAg = new string[10];
-            string[,] postValues = new string[10, 15];
-            Criteria criteria = new Criteria();
-            List<Criteria> list = new List<Criteria>();
-
-            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\Criteria sets.txt");
-            while ((line = file.ReadLine()) != null)
-            {
-                if (!line.StartsWith("--"))
-                {
-                    if (line.StartsWith("!"))
-                    {
-                        criteria = new Criteria();
-                        criteria.Name = line.Substring(1);
-                        colCounter = 0;
-                        entrieCount = 0;
-                        agKey = "";
-                        agSum = "";
-                        preProcess = new string[10];
-                        preAg = new string[10];
-                        preValues = new string[10, 15];
-                        postProcess = new string[10];
-                        postAg = new string[10];
-                        postValues = new string[10, 15];
-                    }
-                    else if (line.StartsWith("@"))
-                    {
-                        if (preAg[0] != null) entrieCount++;
-                        preAg[entrieCount] = line.Substring(1);
-                       
-                    }
-                    else if (line.StartsWith("^"))
-                    {
-                        preProcess[entrieCount] = line.Substring(1);
-                        colCounter = 0;
-                    }
-                    else if (line.StartsWith("#"))
-                    {
-                        if (Regex.IsMatch(line, @"[A-Za-z]"))
-                        {
-                            preValues[entrieCount, colCounter] = line.Substring(1);
-                            colCounter++;
-                        }
-                        if (Regex.IsMatch(line, @"\d"))
-                        {
-                            postValues[entrieCount, colCounter] = line.Substring(1);
-                            colCounter++;
-                        }
-                    }
-                    else if (line.StartsWith("*"))
-                    {
-                        agKey += line.Substring(1);
-                        agKey += ",";
-                    }
-                    else if (line.StartsWith("+"))
-                    {
-                        agSum += line.Substring(1);
-                        agSum += ",";
-                        entrieCount = 0;
-                    }
-                    else if (line.StartsWith("$"))
-                    {
-                        postAg[entrieCount] = line.Substring(1);
-                        colCounter = 0;
-                    }
-                    else if (line.StartsWith("&"))
-                    { 
-                        postProcess[entrieCount] = line.Substring(1);
-                    }
-
-                    if (string.IsNullOrEmpty(line) && file.ReadLine().StartsWith("--") || file.EndOfStream)
-                    {
-                        if (criteria.Name != null)
-                        {
-                            criteria.PreAgCol = preAg;
-                            criteria.PreProcess = preProcess;
-                            criteria.PreValues = preValues;
-                            criteria.agKey = agKey.Substring(0, agKey.Length - 1);
-                            criteria.agSum = agSum.Substring(0, agSum.Length - 1);
-                            criteria.PostAgCol = postAg;
-                            criteria.PostProcess = postProcess;
-                            criteria.PostValues = postValues;
-                            list.Add(criteria);
-                        }
-                    }
-                }
-
-            }
-
-            return list;
         }
     
     }

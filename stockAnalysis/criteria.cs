@@ -4,28 +4,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace stockAnalysis
 {
+    [Serializable]
     public class Criteria
     {
         public string Name { get; set; }
-        public string[] PreAgCol { get; set; }
-        public string[] PreProcess { get; set; }
-        public string[,] PreValues { get; set; }
+        public List<Pre> pre { get; set; }
         public string agKey { get; set; }
         public string agSum { get; set; }
-        public string[] PostAgCol { get; set;}
-        public string[] PostProcess { get; set; }
-        public string[,] PostValues { get; set; }
-        //public Criteria(string name, string[] preAgCol, string preProcess, string[,] prevalues)
-        //{
-        //    Name = name;
-        //    PreAgCol = preAgCol;
-        //    PreProcess = preProcess;
-        //    PreValues = PreValues;
-        //}
-        
-            //Other properties, methods, events...
-        
+        public List<Post> post { get; set; }
+
+    }
+
+    public class Pre
+    {
+        public string column { get; set; }
+        public string process { get; set; }
+        public List<string> values { get; set; }
+    }
+
+
+    public class Post
+    {
+        public string column { get; set; }
+        public string process { get; set; }
+        public List<string> values { get; set; }
+
     }
 }
