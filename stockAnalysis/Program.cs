@@ -89,7 +89,6 @@ namespace stockAnalysis
             DROP TABLE IF EXISTS tabEmployee;
             DROP TABLE IF EXISTS tabDepartment;  -- Drop parent table last.
 
-
             ";
         }
 
