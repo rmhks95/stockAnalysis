@@ -20,13 +20,13 @@ namespace stockAnalysis
         [STAThread]
         static void Main()
         {
-            parseCriteria();
+            List<Criteria> list = parseCriteria();
+
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
 
             runDBConnect();
-
             
         }
 
@@ -35,10 +35,10 @@ namespace stockAnalysis
             try
             {
                 var cb = new SqlConnectionStringBuilder();
-                cb.DataSource = "";
-                cb.UserID = "";
-                cb.Password = "";
-                cb.InitialCatalog = "";
+                cb.DataSource = "cis625.database.windows.net";
+                cb.UserID = "admin123";
+                cb.Password = "Nimda123";
+                cb.InitialCatalog = "criteriaSets";
 
                 using (var connection = new SqlConnection(cb.ConnectionString))
                 {
@@ -53,7 +53,7 @@ namespace stockAnalysis
                 Console.WriteLine(e.ToString());
             }
             Console.WriteLine("View the report output here, then press any key to end the program...");
-            Console.ReadKey();
+            //Console.ReadKey();
         }
 
         static void Submit_Tsql_NonQuery(
@@ -89,31 +89,15 @@ namespace stockAnalysis
             DROP TABLE IF EXISTS tabDepartment;  -- Drop parent table last.
 
 
-            CREATE TABLE tabDepartment
-            (
-               DepartmentCode  nchar(4)          not null
-                  PRIMARY KEY,
-               DepartmentName  nvarchar(128)     not null
-            );
-
-            CREATE TABLE tabEmployee
-            (
-               EmployeeGuid    uniqueIdentifier  not null  default NewId()
-                  PRIMARY KEY,
-               EmployeeName    nvarchar(128)     not null,
-               EmployeeLevel   int               not null,
-               DepartmentCode  nchar(4)              null
-                  REFERENCES tabDepartment (DepartmentCode)  -- (REFERENCES would be disallowed on temporary tables.)
-            );
             ";
         }
 
 
-        static void parseCriteria()
+        static List<Criteria> parseCriteria()
         {
             string line;
             int colCounter = 0;
-            int CriteriaCount = -1;
+            int entrieCount = 0;
             string agKey = "";
             string agSum = "";
             string [] preProcess = new string[10];
@@ -125,7 +109,7 @@ namespace stockAnalysis
             Criteria criteria = new Criteria();
             List<Criteria> list = new List<Criteria>();
 
-            System.IO.StreamReader file = new System.IO.StreamReader(@"U:\\stockAnalysis\\stockAnalysis\\criteria sets.txt");
+            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\stockAnalysis\Criteria sets.txt");
             while ((line = file.ReadLine()) != null)
             {
                 if (!line.StartsWith("--"))
@@ -134,31 +118,38 @@ namespace stockAnalysis
                     {
                         criteria = new Criteria();
                         criteria.Name = line.Substring(1);
-                        CriteriaCount = -1;
+                        colCounter = 0;
+                        entrieCount = 0;
                         agKey = "";
+                        agSum = "";
+                        preProcess = new string[10];
                         preAg = new string[10];
+                        preValues = new string[10, 15];
+                        postProcess = new string[10];
                         postAg = new string[10];
+                        postValues = new string[10, 15];
                     }
                     else if (line.StartsWith("@"))
                     {
-                        CriteriaCount++;
-                        preAg[CriteriaCount] = line.Substring(1);
-                        colCounter = 0;
+                        if (preAg[0] != null) entrieCount++;
+                        preAg[entrieCount] = line.Substring(1);
+                       
                     }
                     else if (line.StartsWith("^"))
                     {
-                        preProcess[CriteriaCount] = line.Substring(1);
+                        preProcess[entrieCount] = line.Substring(1);
+                        colCounter = 0;
                     }
                     else if (line.StartsWith("#"))
                     {
                         if (Regex.IsMatch(line, @"[A-Za-z]"))
                         {
-                            preValues[CriteriaCount, colCounter] = line.Substring(1);
+                            preValues[entrieCount, colCounter] = line.Substring(1);
                             colCounter++;
                         }
                         if (Regex.IsMatch(line, @"\d"))
                         {
-                            postValues[CriteriaCount, colCounter] = line.Substring(1);
+                            postValues[entrieCount, colCounter] = line.Substring(1);
                             colCounter++;
                         }
                     }
@@ -171,17 +162,16 @@ namespace stockAnalysis
                     {
                         agSum += line.Substring(1);
                         agSum += ",";
-                        CriteriaCount = -1;
+                        entrieCount = 0;
                     }
                     else if (line.StartsWith("$"))
                     {
-                        CriteriaCount++;
-                        postAg[CriteriaCount] = line.Substring(1);
+                        postAg[entrieCount] = line.Substring(1);
                         colCounter = 0;
                     }
                     else if (line.StartsWith("&"))
-                    {
-                        postProcess[CriteriaCount] = line.Substring(1);
+                    { 
+                        postProcess[entrieCount] = line.Substring(1);
                     }
 
                     if (string.IsNullOrEmpty(line) && file.ReadLine().StartsWith("--") || file.EndOfStream)
@@ -203,8 +193,8 @@ namespace stockAnalysis
 
             }
 
+            return list;
         }
-
-
+    
     }
 }
