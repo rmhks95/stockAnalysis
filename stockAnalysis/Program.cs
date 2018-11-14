@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -22,7 +24,88 @@ namespace stockAnalysis
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
+
+            runDBConnect();
+
             
+        }
+
+        static void runDBConnect()
+        {
+            try
+            {
+                var cb = new SqlConnectionStringBuilder();
+                cb.DataSource = "";
+                cb.UserID = "";
+                cb.Password = "";
+                cb.InitialCatalog = "";
+
+                using (var connection = new SqlConnection(cb.ConnectionString))
+                {
+                    connection.Open();
+
+                    Submit_Tsql_NonQuery(connection, "2 - Create-Tables",
+                       Build_2_Tsql_CreateTables());
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            Console.WriteLine("View the report output here, then press any key to end the program...");
+            Console.ReadKey();
+        }
+
+        static void Submit_Tsql_NonQuery(
+         SqlConnection connection,
+         string tsqlPurpose,
+         string tsqlSourceCode,
+         string parameterName = null,
+         string parameterValue = null
+         )
+        {
+            Console.WriteLine();
+            Console.WriteLine("=================================");
+            Console.WriteLine("T-SQL to {0}...", tsqlPurpose);
+
+            using (var command = new SqlCommand(tsqlSourceCode, connection))
+            {
+                if (parameterName != null)
+                {
+                    command.Parameters.AddWithValue(  // Or, use SqlParameter class.
+                       parameterName,
+                       parameterValue);
+                }
+                int rowsAffected = command.ExecuteNonQuery();
+                Console.WriteLine(rowsAffected + " = rows affected.");
+            }
+        }
+
+
+        static string Build_2_Tsql_CreateTables()
+        {
+                    return @"
+            DROP TABLE IF EXISTS tabEmployee;
+            DROP TABLE IF EXISTS tabDepartment;  -- Drop parent table last.
+
+
+            CREATE TABLE tabDepartment
+            (
+               DepartmentCode  nchar(4)          not null
+                  PRIMARY KEY,
+               DepartmentName  nvarchar(128)     not null
+            );
+
+            CREATE TABLE tabEmployee
+            (
+               EmployeeGuid    uniqueIdentifier  not null  default NewId()
+                  PRIMARY KEY,
+               EmployeeName    nvarchar(128)     not null,
+               EmployeeLevel   int               not null,
+               DepartmentCode  nchar(4)              null
+                  REFERENCES tabDepartment (DepartmentCode)  -- (REFERENCES would be disallowed on temporary tables.)
+            );
+            ";
         }
 
 
@@ -121,5 +204,7 @@ namespace stockAnalysis
             }
 
         }
+
+
     }
 }
