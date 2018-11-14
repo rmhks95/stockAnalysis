@@ -26,7 +26,8 @@ namespace stockAnalysis
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
 
-            runDBConnect();
+            csvHandler.GetDataTabletFromCSVFile();
+            //runDBConnect();
             
         }
 
@@ -109,7 +110,7 @@ namespace stockAnalysis
             Criteria criteria = new Criteria();
             List<Criteria> list = new List<Criteria>();
 
-            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\stockAnalysis\Criteria sets.txt");
+            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\Criteria sets.txt");
             while ((line = file.ReadLine()) != null)
             {
                 if (!line.StartsWith("--"))
