@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace stockAnalysis
@@ -16,13 +17,6 @@ namespace stockAnalysis
             int entrieCount = 0;
             string agKey = "";
             string agSum = "";
-            //string [] preProcess = new string[10];
-            //string[] preAg = new string[10];
-            //string[,] preValues = new string[10, 15];
-            //string[] postProcess = new string[10];
-            //string[] postAg = new string[10];
-            //string[,] postValues = new string[10, 15];
-
             Criteria criteria = new Criteria();
             Pre pre = new Pre();
             Post post = new Post();
