@@ -16,7 +16,7 @@ namespace stockAnalysis
             DataTable csvData = new DataTable();
             try
             {
-                using (TextFieldParser csvReader = new TextFieldParser(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\File0.csv"))
+                using (TextFieldParser csvReader = new TextFieldParser(@"C:\Users\Cjoew\Google Drive\documents\college\7th Year\CIS 625\stockAnalysis\stockAnalysis\File0.csv"))
                 {
                     csvReader.SetDelimiters(new string[] { "," });
                     csvReader.HasFieldsEnclosedInQuotes = true;
