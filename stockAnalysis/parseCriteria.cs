@@ -20,40 +20,6 @@ namespace stockAnalysis
         private DocumentClient client;
 
 
-        private void GetStartedDemo()
-        {
-            
-
-            ParseCriteria();
-        }
-
-
-        public static void Info()
-        {
-            // ADD THIS PART TO YOUR CODE
-            try
-            {
-                parseCriteria p = new parseCriteria();
-                p.GetStartedDemo();
-            }
-            catch (DocumentClientException de)
-            {
-                Exception baseException = de.GetBaseException();
-                Console.WriteLine("{0} error occurred: {1}, Message: {2}", de.StatusCode, de.Message, baseException.Message);
-            }
-            catch (Exception e)
-            {
-                Exception baseException = e.GetBaseException();
-                Console.WriteLine("Error: {0}, Message: {1}", e.Message, baseException.Message);
-            }
-            finally
-            {
-                Console.WriteLine("End of demo, press any key to exit.");
-                //Console.ReadKey();
-            }
-        }
-
-
         public static void ParseCriteria()
         {
              var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
@@ -66,7 +32,6 @@ namespace stockAnalysis
             Pre pre = new Pre();
             Post post = new Post();
             int index = 0;
-            List<Criteria> list = new List<Criteria>();
 
             System.IO.StreamReader file = new System.IO.StreamReader(@"U:\stockAnalysis\stockAnalysis\Criteria sets.txt");
             while ((line = file.ReadLine()) != null)
@@ -161,10 +126,6 @@ namespace stockAnalysis
                 }
 
             }
-
-            
-
-            //return list;
         }
     }
 }
