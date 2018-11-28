@@ -7,8 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
+using System.Management;
 
 namespace stockAnalysis
 {
@@ -20,17 +23,38 @@ namespace stockAnalysis
         [STAThread]
         static void Main()
         {
-            //  List<Criteria> list = parseCriteria.ParseCriteria();
+            //List<Criteria> list = 
+            parseCriteria.ParseCriteria();
+            
 
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
 
-            //    csvHandler.GetDataTabletFromCSVFile();
+            csvHandler.GetDataTabletFromCSVFile();
             //runDBConnect();
 
-         
-            csvHandler.InsertDataIntoSQLServerUsingSQLBulkCopy();
+            Console.WriteLine("Number Of Logical Processors: {0}", Environment.ProcessorCount);
+
+            int coreCount = 0;
+            foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get())
+            {
+                coreCount += int.Parse(item["NumberOfCores"].ToString());
+            }
+            Console.WriteLine("Number Of Cores: {0}", coreCount);
+
+            foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_ComputerSystem").Get())
+            {
+                Console.WriteLine("Number Of Physical Processors: {0} ", item["NumberOfProcessors"]);
+            }
+
+            //forEach(criteria, do this to current criteria)
+            Parallel.ForEach(list, (currentCriteria) =>
+            {
+                Thread.Sleep(1000); // used to slow it down to make sure it utilizes multiple threads
+
+                Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
+            });
         }
 
         static void runDBConnect()
