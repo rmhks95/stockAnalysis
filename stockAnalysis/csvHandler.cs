@@ -6,6 +6,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using System.IO;
 
 namespace stockAnalysis
 {
@@ -16,7 +18,8 @@ namespace stockAnalysis
             DataTable csvData = new DataTable();
             try
             {
-                using (TextFieldParser csvReader = new TextFieldParser(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\File0.csv"))
+                //C:\Users\Erik Homewood\Desktop\cis\CIS 625\project\inputs\File0.cvs
+                using (TextFieldParser csvReader = new TextFieldParser(@"C:\Users\Erik Homewood\Source\Repos\stockAnalysis\stockAnalysis\File0.csv"))
                 {
                     csvReader.SetDelimiters(new string[] { "," });
                     csvReader.HasFieldsEnclosedInQuotes = true;
@@ -49,14 +52,25 @@ namespace stockAnalysis
             return csvData;
         }
 
-        static void InsertDataIntoSQLServerUsingSQLBulkCopy(DataTable csvFileData)
+
+        public static void InsertDataIntoSQLServerUsingSQLBulkCopy()
         {
-            using (SqlConnection dbConnection = new SqlConnection("Data Source=ProductHost;Initial Catalog=yourDB;Integrated Security=SSPI;"))
-            {
+            var csvFileData = GetDataTabletFromCSVFile();
+            var cb = new SqlConnectionStringBuilder();
+            cb.DataSource = "tcp:cis625.database.windows.net,1433";
+            cb.UserID = "admin123";
+            cb.Password = "Nimda123";
+            cb.InitialCatalog = "625data";
+
+
+            using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString)) {
                 dbConnection.Open();
+                string query = "TRUNCATE TABLE Stocks.DailyInputs ";
+                SqlCommand cmd = new SqlCommand(query, dbConnection);
+                cmd.ExecuteNonQuery();
                 using (SqlBulkCopy s = new SqlBulkCopy(dbConnection))
                 {
-                    s.DestinationTableName = "Your table name";
+                    s.DestinationTableName = "Stocks.DailyInputs";
                     foreach (var column in csvFileData.Columns)
                         s.ColumnMappings.Add(column.ToString(), column.ToString());
                     s.WriteToServer(csvFileData);

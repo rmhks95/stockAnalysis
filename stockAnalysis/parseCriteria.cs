@@ -22,7 +22,7 @@ namespace stockAnalysis
             Post post = new Post();
             int index = 0;
             List<Criteria> list = new List<Criteria>();
-
+            //C:\Users\Erik Homewood\Desktop\cis\CIS 625\project\inputs\File0.cvs
             System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\Criteria sets.txt");
             while ((line = file.ReadLine()) != null)
             {
