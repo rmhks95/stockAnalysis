@@ -10,6 +10,7 @@ using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.IO;
+using System.Data.SqlClient;
 
 namespace stockAnalysis
 {
@@ -33,7 +34,7 @@ namespace stockAnalysis
             Post post = new Post();
             int index = 0;
 
-            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Cjoew\Google Drive\documents\college\7th Year\CIS 625\stockAnalysis\stockAnalysis\Criteria sets.txt");
+            System.IO.StreamReader file = new System.IO.StreamReader(@"U:\stockAnalysis\stockAnalysis\Criteria sets.txt");
             while ((line = file.ReadLine()) != null)
             {
                 if (!line.StartsWith("--"))
@@ -109,12 +110,27 @@ namespace stockAnalysis
                             criteria.post.Add(post);
                             try
                             {
-                                var propertiesOfUser = client.CreateDocumentQuery<Criteria>(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"))
+                                var cb = new SqlConnectionStringBuilder();
+                                cb.DataSource = "tcp:cis625.database.windows.net,1433";
+                                cb.UserID = "admin123";
+                                cb.Password = "Nimda123";
+                                cb.InitialCatalog = "625data";
+                                
+                                  var propertiesOfUser = client.CreateDocumentQuery<Criteria>(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"))
                                         .Where(p => p.Name == criteria.Name)
                                         .ToList(); 
 
                                 if (!(propertiesOfUser.Count > 0))
                                 {
+                                    using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
+                                    {
+                                        dbConnection.Open();
+                                        string query = string.Format("INSERT INTO CriteriaFiltering.CriteriaSets(Name) Values({0})", criteria.Name);
+                                        SqlCommand cmd = new SqlCommand(query, dbConnection);
+                                        cmd.ExecuteNonQuery();
+                                        dbConnection.Close();
+                                    }
+
                                     Document doc = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"), criteria).Result;
                                 }
                             }catch(Exception e)
