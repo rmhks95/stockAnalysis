@@ -4,14 +4,59 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
+using Newtonsoft.Json;
+using System.Configuration;
+using System.IO;
 
 namespace stockAnalysis
 {
     class parseCriteria
     {
+        private const string EndpointUrl = "https://criteria.documents.azure.com:443/";
+        private const string PrimaryKey = "eDNWOyfslnhfiiRjoUufC6ADHfcQwgXpB0e5sRCFil35hK4kwy2qU0LtSvBjuqm7BMqE2rt4xcWsOfxl2LrFPw==";
+        private DocumentClient client;
 
-        public static List<Criteria> ParseCriteria()
+
+        private void GetStartedDemo()
         {
+            
+
+            ParseCriteria();
+        }
+
+
+        public static void Info()
+        {
+            // ADD THIS PART TO YOUR CODE
+            try
+            {
+                parseCriteria p = new parseCriteria();
+                p.GetStartedDemo();
+            }
+            catch (DocumentClientException de)
+            {
+                Exception baseException = de.GetBaseException();
+                Console.WriteLine("{0} error occurred: {1}, Message: {2}", de.StatusCode, de.Message, baseException.Message);
+            }
+            catch (Exception e)
+            {
+                Exception baseException = e.GetBaseException();
+                Console.WriteLine("Error: {0}, Message: {1}", e.Message, baseException.Message);
+            }
+            finally
+            {
+                Console.WriteLine("End of demo, press any key to exit.");
+                //Console.ReadKey();
+            }
+        }
+
+
+        public static void ParseCriteria()
+        {
+             var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
             string line;
             int colCounter = 0;
             int entrieCount = 0;
@@ -23,7 +68,7 @@ namespace stockAnalysis
             int index = 0;
             List<Criteria> list = new List<Criteria>();
 
-            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\Criteria sets.txt");
+            System.IO.StreamReader file = new System.IO.StreamReader(@"U:\stockAnalysis\stockAnalysis\Criteria sets.txt");
             while ((line = file.ReadLine()) != null)
             {
                 if (!line.StartsWith("--"))
@@ -97,14 +142,29 @@ namespace stockAnalysis
                             criteria.agKey = agKey.Substring(0, agKey.Length - 1);
                             criteria.agSum = agSum.Substring(0, agSum.Length - 1);
                             criteria.post.Add(post);
-                            list.Add(criteria);
+                            try
+                            {
+                                var propertiesOfUser = client.CreateDocumentQuery<Criteria>(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"))
+                                        .Where(p => p.Name == criteria.Name)
+                                        .ToList(); 
+
+                                if (!(propertiesOfUser.Count > 0))
+                                {
+                                    Document doc = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"), criteria).Result;
+                                }
+                            }catch(Exception e)
+                            {
+                                Console.WriteLine(e);
+                            }
                         }
                     }
                 }
 
             }
 
-            return list;
+            
+
+            //return list;
         }
     }
 }

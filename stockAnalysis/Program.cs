@@ -20,7 +20,9 @@ namespace stockAnalysis
         [STAThread]
         static void Main()
         {
-            List<Criteria> list = parseCriteria.ParseCriteria();
+            //List<Criteria> list = 
+            parseCriteria.ParseCriteria();
+            
 
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
