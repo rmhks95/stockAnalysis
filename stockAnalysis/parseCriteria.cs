@@ -23,7 +23,7 @@ namespace stockAnalysis
 
         public static void ParseCriteria()
         {
-             var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
+            var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
             string line;
             int colCounter = 0;
             int entrieCount = 0;

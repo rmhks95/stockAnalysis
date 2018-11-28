@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
 
+
 namespace stockAnalysis
 {
     class threadCriteria
@@ -50,7 +51,7 @@ namespace stockAnalysis
                 Thread.Sleep(1000); // used to slow it down until actual code is implemented, to make sure it utilizes multiple threads
 
                 
-                if(currentCriteria.Name =="CriteriaSet2")
+                if(currentCriteria.Name =="CriteriaSet1")
                 Plinkq(currentCriteria, dt);
 
                 Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
@@ -96,15 +97,15 @@ namespace stockAnalysis
                 results = table.AsEnumerable();
             }
             resu = table.AsEnumerable();
-            var keys = currentCriteria.agKey.Split(',');
-            var sums = currentCriteria.agSum.Split(',');
-            var test = "x.Field<string>(stockcode), x.Field<string>(holderid), x.Field<string>(stocktype)";
-            foreach (string key in keys) {
-                var news = resu.GroupBy(x => new { holder=x.Field<string>("stocktype"), code=x.Field<string>("holderid") }).Select(val => val.First() ); //row.Field<string>(key)
-                
-                    }
+            IEnumerable<string> columnsToGroupBy = currentCriteria.agKey.Split(',');
+            IEnumerable<string> sumsToSelect = currentCriteria.agSum.Split(',');
 
+           
+            var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
             Console.WriteLine(resu);
         }
     }
+
+    
+    
 }
