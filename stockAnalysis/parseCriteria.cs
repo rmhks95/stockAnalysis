@@ -34,7 +34,7 @@ namespace stockAnalysis
             Post post = new Post();
             int index = 0;
 
-            System.IO.StreamReader file = new System.IO.StreamReader(@"U:\stockAnalysis\stockAnalysis\Criteria sets.txt");
+            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Cjoew\Google Drive\documents\college\7th Year\CIS 625\stockAnalysis\stockAnalysis\Criteria sets.txt");
             while ((line = file.ReadLine()) != null)
             {
                 if (!line.StartsWith("--"))
@@ -125,7 +125,7 @@ namespace stockAnalysis
                                     using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
                                     {
                                         dbConnection.Open();
-                                        string query = string.Format("INSERT INTO CriteriaFiltering.CriteriaSets(Name) Values({0})", criteria.Name);
+                                        string query = string.Format("INSERT INTO CriteriaFiltering.CriteriaSets(Name) Values('{0}')", criteria.Name);
                                         SqlCommand cmd = new SqlCommand(query, dbConnection);
                                         cmd.ExecuteNonQuery();
                                         dbConnection.Close();
