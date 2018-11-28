@@ -23,8 +23,7 @@ namespace stockAnalysis
         [STAThread]
         static void Main()
         {
-            //List<Criteria> list = 
-            parseCriteria.ParseCriteria();
+            //parseCriteria.ParseCriteria();
             
 
             //Application.EnableVisualStyles();
