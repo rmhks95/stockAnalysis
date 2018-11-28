@@ -20,18 +20,17 @@ namespace stockAnalysis
         [STAThread]
         static void Main()
         {
-            //List<Criteria> list = 
             parseCriteria.ParseCriteria();
 
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
 
-            csvHandler.GetDataTabletFromCSVFile();
+            //csvHandler.GetDataTabletFromCSVFile();
             //runDBConnect();
 
             //doing work
-            threadCriteria.Start();
+            //threadCriteria.Start();
         }
 
         static void runDBConnect()

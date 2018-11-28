@@ -17,8 +17,7 @@ namespace stockAnalysis
         private const string EndpointUrl = "https://criteria.documents.azure.com:443/";
         private const string PrimaryKey = "eDNWOyfslnhfiiRjoUufC6ADHfcQwgXpB0e5sRCFil35hK4kwy2qU0LtSvBjuqm7BMqE2rt4xcWsOfxl2LrFPw==";
         private DocumentClient client;
-
-
+        
         public static void Start()
         {
             var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
