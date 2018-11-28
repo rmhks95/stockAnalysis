@@ -7,8 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
+using System.Management;
 
 namespace stockAnalysis
 {
@@ -28,7 +31,28 @@ namespace stockAnalysis
 
             csvHandler.GetDataTabletFromCSVFile();
             //runDBConnect();
-            
+
+            Console.WriteLine("Number Of Logical Processors: {0}", Environment.ProcessorCount);
+
+            int coreCount = 0;
+            foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get())
+            {
+                coreCount += int.Parse(item["NumberOfCores"].ToString());
+            }
+            Console.WriteLine("Number Of Cores: {0}", coreCount);
+
+            foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_ComputerSystem").Get())
+            {
+                Console.WriteLine("Number Of Physical Processors: {0} ", item["NumberOfProcessors"]);
+            }
+
+            //forEach(criteria, do this to current criteria)
+            Parallel.ForEach(list, (currentCriteria) =>
+            {
+                Thread.Sleep(1000); // used to slow it down to make sure it utilizes multiple threads
+
+                Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
+            });
         }
 
         static void runDBConnect()
