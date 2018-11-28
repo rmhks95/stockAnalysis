@@ -47,8 +47,17 @@ namespace stockAnalysis
             {
                 Thread.Sleep(1000); // used to slow it down until actual code is implemented, to make sure it utilizes multiple threads
 
+                Plinkq(currentCriteria);
+
                 Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
             });
+        }
+
+        static void Plinkq(Criteria currentCriteria)
+        {
+            
+        
+            
         }
     }
 }
