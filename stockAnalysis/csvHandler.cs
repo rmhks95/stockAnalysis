@@ -53,29 +53,29 @@ namespace stockAnalysis
         }
 
 
-        public static void InsertDataIntoSQLServerUsingSQLBulkCopy()
-        {
-            var csvFileData = GetDataTabletFromCSVFile();
-            var cb = new SqlConnectionStringBuilder();
-            cb.DataSource = "tcp:cis625.database.windows.net,1433";
-            cb.UserID = "admin123";
-            cb.Password = "Nimda123";
-            cb.InitialCatalog = "625data";
+        //public static void InsertDataIntoSQLServerUsingSQLBulkCopy()
+        //{
+        //    var csvFileData = GetDataTabletFromCSVFile();
+        //    var cb = new SqlConnectionStringBuilder();
+        //    cb.DataSource = "tcp:cis625.database.windows.net,1433";
+        //    cb.UserID = "admin123";
+        //    cb.Password = "Nimda123";
+        //    cb.InitialCatalog = "625data";
 
 
-            using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString)) {
-                dbConnection.Open();
-                string query = "TRUNCATE TABLE Stocks.DailyInputs ";
-                SqlCommand cmd = new SqlCommand(query, dbConnection);
-                cmd.ExecuteNonQuery();
-                using (SqlBulkCopy s = new SqlBulkCopy(dbConnection))
-                {
-                    s.DestinationTableName = "Stocks.DailyInputs";
-                    foreach (var column in csvFileData.Columns)
-                        s.ColumnMappings.Add(column.ToString(), column.ToString());
-                    s.WriteToServer(csvFileData);
-                }
-            }
-        }
+        //    using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString)) {
+        //        dbConnection.Open();
+        //        string query = "TRUNCATE TABLE Stocks.DailyInputs ";
+        //        SqlCommand cmd = new SqlCommand(query, dbConnection);
+        //        cmd.ExecuteNonQuery();
+        //        using (SqlBulkCopy s = new SqlBulkCopy(dbConnection))
+        //        {
+        //            s.DestinationTableName = "Stocks.DailyInputs";
+        //            foreach (var column in csvFileData.Columns)
+        //                s.ColumnMappings.Add(column.ToString(), column.ToString());
+        //            s.WriteToServer(csvFileData);
+        //        }
+        //    }
+        //}
     }
 }
