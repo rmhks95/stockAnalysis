@@ -7,7 +7,6 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
 
@@ -100,9 +99,11 @@ namespace stockAnalysis
             IEnumerable<string> columnsToGroupBy = currentCriteria.agKey.Split(',');
             IEnumerable<string> sumsToSelect = currentCriteria.agSum.Split(',');
 
-           
-            var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
-            Console.WriteLine(resu);
+            var keys = currentCriteria.agKey.Split(',');
+            
+            var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => new { nK=val.FirstOrDefault().Field<string>(keys[0])+"~"+ val.FirstOrDefault().Field<string>(keys[1]), total=val.Sum(c=>Convert.ToDecimal(c.Field<string>(sumsToSelect.FirstOrDefault()))).ToString()});//new NTuple<object>(from sum in sumsToSelect select val[sum])
+            //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
+            Console.WriteLine(news);
         }
     }
 
