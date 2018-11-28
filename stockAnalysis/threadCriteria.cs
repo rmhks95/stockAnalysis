@@ -18,15 +18,10 @@ namespace stockAnalysis
         private const string PrimaryKey = "eDNWOyfslnhfiiRjoUufC6ADHfcQwgXpB0e5sRCFil35hK4kwy2qU0LtSvBjuqm7BMqE2rt4xcWsOfxl2LrFPw==";
         private DocumentClient client;
 
-        private void GetStartedDemo()
-        {
-
-
-            ParseCriteria();
-        }
 
         public static void Start()
         {
+            var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
             var list = client.CreateDocumentQuery<Criteria>(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"))
                                         .ToList();
 
