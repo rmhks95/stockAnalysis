@@ -19,7 +19,7 @@ namespace stockAnalysis
             try
             {
                 //C:\Users\Erik Homewood\Desktop\cis\CIS 625\project\inputs\File0.cvs
-                using (TextFieldParser csvReader = new TextFieldParser(@"U:\stockAnalysis\stockAnalysis\File0.csv"))
+                using (TextFieldParser csvReader = new TextFieldParser(@"C:\Users\Cjoew\Google Drive\documents\college\7th Year\CIS 625\stockAnalysis\stockAnalysis\File0.csv"))
                 {
                     csvReader.SetDelimiters(new string[] { "," });
                     csvReader.HasFieldsEnclosedInQuotes = true;
