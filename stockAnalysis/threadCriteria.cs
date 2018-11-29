@@ -160,23 +160,35 @@ namespace stockAnalysis
 
         static void postAgg(DataTable dataTable)
         {
-            var csvFileData = GetDataTabletFromCSVFile();
+            
             var cb = new SqlConnectionStringBuilder();
             cb.DataSource = "tcp:cis625.database.windows.net,1433";
             cb.UserID = "admin123";
             cb.Password = "Nimda123";
             cb.InitialCatalog = "625data";
 
-            using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
+           
+            using (SqlConnection myConnection = new SqlConnection(cb.ConnectionString))
             {
-                dbConnection.Open();
+                        
+                string oString = "Select * from Stocks.RunningData";
+                SqlCommand oCmd = new SqlCommand(oString, myConnection);
+                myConnection.Open();
+                using (SqlDataReader oReader = oCmd.ExecuteReader())
+                {
+                    while (oReader.Read())
+                    {
+                        Console.WriteLine("here");
+                    }
 
-            }
+                    myConnection.Close();
+                }
+            }          
 
-
-            }
 
         }
+
+    }
 
     
     
