@@ -13,13 +13,13 @@ namespace stockAnalysis
 {
     class csvHandler
     {
-        public static DataTable GetDataTabletFromCSVFile()
+        public static void GetDataTabletFromCSVFile(string path)
         {
             DataTable csvData = new DataTable();
             try
             {
-                //C:\Users\Erik Homewood\Desktop\cis\CIS 625\project\inputs\File0.cvs
-                using (TextFieldParser csvReader = new TextFieldParser(@"U:\stockAnalysis\stockAnalysis\File0.csv"))
+                //C:\Users\Erik Homewood\Desktop\cis\CIS 625\project\inputs\File0.csv
+                using (TextFieldParser csvReader = new TextFieldParser(path))
                 {
                     csvReader.SetDelimiters(new string[] { "," });
                     csvReader.HasFieldsEnclosedInQuotes = true;
@@ -47,9 +47,10 @@ namespace stockAnalysis
             }
             catch (Exception ex)
             {
-                return null;
+               // return null;
             }
-            return csvData;
+          //  return csvData;
+            threadCriteria.Start(csvData);
         }
 
 
