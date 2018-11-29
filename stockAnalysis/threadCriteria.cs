@@ -153,6 +153,21 @@ namespace stockAnalysis
                 toAdd["AggregatedKey"] = aggregatedKey;
                 aggregatedTable.Rows.Add(toAdd.ItemArray);
             }
+            
+            StringBuilder sb = new StringBuilder();
+
+            IEnumerable<string> columnNames = aggregatedTable.Columns.Cast<DataColumn>().
+                                              Select(column => column.ColumnName);
+            sb.AppendLine(string.Join(",", columnNames));
+
+            foreach (DataRow row in aggregatedTable.Rows)
+            {
+                IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
+                sb.AppendLine(string.Join(",", fields));
+            }
+
+            System.IO.File.WriteAllText("C:\\Users\\Cjoew\\Google Drive\\documents\\college\\7th Year\\CIS 625\\stockAnalysis\\test"+ Thread.CurrentThread.ManagedThreadId + ".csv", sb.ToString());
+
             //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
             Console.WriteLine(aggregatedTable);
             postAgg(aggregatedTable);
