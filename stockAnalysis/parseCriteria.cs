@@ -34,7 +34,7 @@ namespace stockAnalysis
             Post post = new Post();
             int index = 0;
 
-            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Cjoew\Google Drive\documents\college\7th Year\CIS 625\stockAnalysis\stockAnalysis\Criteria sets.txt");
+            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Cjoew\Google Drive\documents\college\7th Year\CIS 625\stockAnalysis\stockAnalysis\Criteria sets.txt"); 
             while ((line = file.ReadLine()) != null)
             {
                 if (!line.StartsWith("--"))
