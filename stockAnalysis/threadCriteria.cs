@@ -105,6 +105,11 @@ namespace stockAnalysis
 
             var groupList = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])); //.Select(val => new { nK=val.FirstOrDefault().Field<string>(keys[0])+"~"+ val.FirstOrDefault().Field<string>(keys[1]), total=val.Sum(c=>Convert.ToDecimal(c.Field<string>(sumsToSelect.FirstOrDefault()))).ToString()});//new NTuple<object>(from sum in sumsToSelect select val[sum])
 
+            if (resu.Count() == 0)
+            {
+                Console.WriteLine("nothing found");
+                return;
+            }
 
             DataTable aggregatedTable = resu.FirstOrDefault().Table.Clone();
             aggregatedTable.Columns.Add("AggregatedKey", typeof(string));
