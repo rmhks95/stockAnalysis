@@ -119,34 +119,57 @@ namespace stockAnalysis
             //        columnsToSum.Add(false);
             //    }
             //}
-
+            
             DataTable aggregatedTable = resu.ElementAtOrDefault(0).Table.Clone();
+            aggregatedTable.Columns.Add("AggregatedKey", typeof(string));
             /*foreach (DataColumn col in resu.ElementAtOrDefault(0).Table.Columns)
             {
                 table.Columns.Add(col.ColumnName, col.DataType);
             }*/
 
+            //DataRow toAdd = aggregatedTable.NewRow();
+            //toAdd.Table.Columns.Add("AggregatedKey", typeof(string));
+            //toAdd["AggregatedKey"] = aggregatedKey;
+
             foreach (var group in groupList)
             {
+                string aggregatedKey = "";
                 DataRow toAdd = group.ElementAt(0);
-                for(int i = 1; i < group.Count(); i++){ //each row in the group (except first)
-                    for(int j = 0; j < group.ElementAt(i).Table.Columns.Count; j++) //each column in row
+                try
+                {
+                    toAdd.Table.Columns.Add("AggregatedKey", typeof(string));
+                    toAdd["AggregatedKey"] = aggregatedKey;
+                }
+                catch
+                {
+
+                }
+                for (int i = 1; i < group.Count(); i++)
+                { //each row in the group (except first)
+                    for (int j = 0; j < group.ElementAt(i).Table.Columns.Count; j++) //each column in row
                     {
                         var colName = group.ElementAt(i).Table.Columns[j].ColumnName;
                         if (sumsToSelect.Contains(colName))
                         {
                             toAdd[colName] = Convert.ToDouble(toAdd[colName].ToString()) + Convert.ToDouble(group.ElementAt(i)[colName].ToString());
-                        }else if (columnsToGroupBy.Contains(colName))
+                        }
+                        else if (toAdd[colName].ToString() != group.ElementAt(i)[colName].ToString())
                         {
                             toAdd[colName] = null;//group.ElementAt(i)[colName].ToString();
                         }
                     }
 
                 }
+                for (int i = 0; i < columnsToGroupBy.Count(); i++)
+                {
+                    if (i == 0) aggregatedKey = toAdd[columnsToGroupBy.ElementAt(i)].ToString();
+                    else aggregatedKey += "~" + toAdd[columnsToGroupBy.ElementAt(i)].ToString();
+                }
+                toAdd["AggregatedKey"] = aggregatedKey;
                 aggregatedTable.Rows.Add(toAdd.ItemArray);
             }
             //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
-            Console.WriteLine(aggregatedTables);
+            Console.WriteLine(aggregatedTable);
         }
     }
 
