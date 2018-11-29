@@ -106,7 +106,7 @@ namespace stockAnalysis
             var groupList = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])); //.Select(val => new { nK=val.FirstOrDefault().Field<string>(keys[0])+"~"+ val.FirstOrDefault().Field<string>(keys[1]), total=val.Sum(c=>Convert.ToDecimal(c.Field<string>(sumsToSelect.FirstOrDefault()))).ToString()});//new NTuple<object>(from sum in sumsToSelect select val[sum])
 
 
-            DataTable aggregatedTable = resu.ElementAtOrDefault(0).Table.Clone();
+            DataTable aggregatedTable = resu.FirstOrDefault().Table.Clone();
             aggregatedTable.Columns.Add("AggregatedKey", typeof(string));
             /*foreach (DataColumn col in resu.ElementAtOrDefault(0).Table.Columns)
             {
@@ -122,7 +122,7 @@ namespace stockAnalysis
             foreach (var group in groupList)
             {
                 string aggregatedKey = "";
-                DataRow toAdd = group.ElementAt(0);
+                DataRow toAdd = group.FirstOrDefault();
                 if(!(toAdd.Table.Columns.Contains("AggregatedKey")))toAdd.Table.Columns.Add("AggregatedKey", typeof(string));
                 for (int i = 1; i < group.Count(); i++)
                 { //each row in the group (except first)
