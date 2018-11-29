@@ -183,7 +183,7 @@ namespace stockAnalysis
                 {
                     while (oReader.Read())
                     {
-                        Console.WriteLine("here");
+                        var something = oReader["StockCode"].ToString();
                     }
 
                     myConnection.Close();
