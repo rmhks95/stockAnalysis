@@ -22,15 +22,15 @@ namespace stockAnalysis
         {
             //parseCriteria.ParseCriteria();
 
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new Form1());
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
 
-            var data = csvHandler.GetDataTabletFromCSVFile();
+            //var data = csvHandler.GetDataTabletFromCSVFile();
             //runDBConnect();
 
             //doing work
-            threadCriteria.Start(data);
+          
         }
 
         static void runDBConnect()
