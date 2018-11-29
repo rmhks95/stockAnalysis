@@ -172,24 +172,23 @@ namespace stockAnalysis
             cb.Password = "Nimda123";
             cb.InitialCatalog = "625data";
 
-           
+            DataTable dataFromSQL = new DataTable();
             using (SqlConnection myConnection = new SqlConnection(cb.ConnectionString))
             {
                         
                 string oString = "Select * from Stocks.RunningData";
                 SqlCommand oCmd = new SqlCommand(oString, myConnection);
                 myConnection.Open();
-                using (SqlDataReader oReader = oCmd.ExecuteReader())
-                {
-                    while (oReader.Read())
-                    {
-                        var something = oReader["StockCode"].ToString();
-                    }
 
-                    myConnection.Close();
-                }
-            }          
 
+                // create data adapter
+                SqlDataAdapter da = new SqlDataAdapter(oCmd);
+                // this will query your database and return the result to your datatable
+                da.Fill(dataFromSQL);
+                myConnection.Close();
+                da.Dispose();
+            }
+            Console.WriteLine("here");
 
         }
 
