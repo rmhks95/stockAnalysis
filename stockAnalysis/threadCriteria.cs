@@ -150,8 +150,28 @@ namespace stockAnalysis
             }
             //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
             Console.WriteLine(aggregatedTable);
+            postAgg(aggregatedTable);
         }
-    }
+
+        static void postAgg(DataTable dataTable)
+        {
+            var csvFileData = GetDataTabletFromCSVFile();
+            var cb = new SqlConnectionStringBuilder();
+            cb.DataSource = "tcp:cis625.database.windows.net,1433";
+            cb.UserID = "admin123";
+            cb.Password = "Nimda123";
+            cb.InitialCatalog = "625data";
+
+            using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
+            {
+                dbConnection.Open();
+
+            }
+
+
+            }
+
+        }
 
     
     
