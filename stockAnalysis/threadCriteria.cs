@@ -155,10 +155,10 @@ namespace stockAnalysis
             }
             //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
             Console.WriteLine(aggregatedTable);
-            postAgg(aggregatedTable);
+            postAgg(aggregatedTable, currentCriteria);
         }
 
-        static void postAgg(DataTable dataTable)
+        static void postAgg(DataTable dataTable, Criteria criteria)
         {
             
             var cb = new SqlConnectionStringBuilder();
