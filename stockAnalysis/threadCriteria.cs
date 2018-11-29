@@ -124,7 +124,6 @@ namespace stockAnalysis
                 string aggregatedKey = "";
                 DataRow toAdd = group.ElementAt(0);
                 if(!(toAdd.Table.Columns.Contains("AggregatedKey")))toAdd.Table.Columns.Add("AggregatedKey", typeof(string));
-                toAdd["AggregatedKey"] = aggregatedKey;
                 for (int i = 1; i < group.Count(); i++)
                 { //each row in the group (except first)
                     for (int j = 0; j < group.ElementAt(i).Table.Columns.Count; j++) //each column in row
