@@ -146,7 +146,7 @@ namespace stockAnalysis
                 aggregatedTable.Rows.Add(toAdd.ItemArray);
             }
             //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
-            Console.WriteLine(aggregatedTables);
+            Console.WriteLine(aggregatedTable);
         }
     }
 
