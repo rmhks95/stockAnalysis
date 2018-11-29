@@ -96,7 +96,7 @@ $sharesheld
 #South Korea
 --Whose stock type is "Preferred"
 @stocktype
-^=
+^<>
 #Preferred
 --And whose direction is "Long"
 @direction
