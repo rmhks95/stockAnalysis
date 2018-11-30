@@ -176,7 +176,7 @@ namespace stockAnalysis
             using (SqlConnection myConnection = new SqlConnection(cb.ConnectionString))
             {
                         
-                string oString = "Select * from Stocks.RunningData";
+                string oString = "Select * from Stocks.RunningData where CriteriaSet="+criteria.Name;
                 SqlCommand oCmd = new SqlCommand(oString, myConnection);
                 myConnection.Open();
 
@@ -188,7 +188,10 @@ namespace stockAnalysis
                 myConnection.Close();
                 da.Dispose();
             }
-            Console.WriteLine("here");
+
+               
+
+            Console.WriteLine(dataFromSQL);
 
         }
 
