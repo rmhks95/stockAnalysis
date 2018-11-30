@@ -144,12 +144,7 @@ namespace stockAnalysis
                 da.Dispose();
 
             Console.WriteLine(dataFromSQL);
-            var printMe = currentData.Copy();
-            writeCSV(printMe, null, "dataIntoPostDetails", criteria.Name);
-            printMe = currentData.Copy();
-            var list = criteria.agSum.Split(',').ToList();
-            list.Add("AggregatedKey");
-            writeCSV(printMe, list, "dataIntoPostAggFiltered", criteria.Name);
+            var addFound = currentData.Clone();
             foreach (DataRow curRows in currentData.Rows)
             {
 
@@ -267,19 +262,85 @@ namespace stockAnalysis
                 }
                 if (valueBroke.FirstOrDefault() != null)
                 {
+                    addFound.Columns.Add("threshold");
+                    curRows.Table.Columns.Add("threshold");
+                    curRows["threshold"] = valueBroke.FirstOrDefault();
+                    addFound.ImportRow(curRows);
                     foreach (var value in valueBroke)
                         Console.WriteLine("Criteria " + criteria.post[Array.IndexOf(valueBroke, value)].process + " " + value);
 
                 }
 
             }
+            var printMe = addFound.Copy();
+            writeCSV(printMe, null, "PostAggDetails", criteria.Name);
+            printMe = addFound.Copy();
+            var list = criteria.agSum.Split(',').ToList();
+            list.Add("AggregatedKey");
+            writeCSV(printMe, list, "PostAggFiltered", criteria.Name);
+            printMe = addFound.Copy();
+
+            Console.WriteLine(printMe);
+
+
+
+            StringBuilder sb = new StringBuilder();
+
+
+            sb.AppendLine("Set,"+criteria.Name);
+            sb.AppendLine("Date," + DateTime.Now.ToString("MM/dd/yyyy"));
+            
+            foreach(var key in criteria.agKey.Split(','))
+            {
+                sb.AppendLine("Agg Key Column," + key);
+            }
+
+
+            var columns = new List<string>();
+            foreach (var post in criteria.post)
+            {
+                sb.AppendLine("Post Agg Column," + post.column);
+
+                columns.Add(post.column);
+                
+            }
+
+            var removeRows = new List<string>();
+            columns.Add("AggregatedKey");
+            columns.Add("threshold");
+            foreach (DataColumn column in printMe.Columns)
+            {
+                if (!(columns.Contains(column.ColumnName))) removeRows.Add(column.ColumnName);
+
+            }
+
+            foreach (var name in removeRows)
+            {
+                printMe.Columns.Remove(name);
+            }
+
+            sb.AppendLine("");
+            sb.AppendLine("ColumnValue,Agg Key,Threshold Broke");
+
+
+
+            foreach (DataRow row in printMe.Rows)
+            {
+                IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
+                sb.AppendLine(string.Join(",", fields));
+            }
+
+
+
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            File.WriteAllText(path + "\\" + "ThresholdOutput" + criteria.Name + ".csv", sb.ToString());
 
 
         }
 
 
 
-         static void writeCSV(DataTable currentData, List<string> columns, string step, string criteriaName)
+        static void writeCSV(DataTable currentData, List<string> columns, string step, string criteriaName)
         {
             StringBuilder sb = new StringBuilder();
 
