@@ -163,7 +163,7 @@ namespace stockAnalysis
             postAgg(aggregatedTable, currentCriteria);
         }
 
-        static void postAgg(DataTable dataTable, Criteria criteria)
+        static void postAgg(DataTable currentData, Criteria criteria)
         {
             
             var cb = new SqlConnectionStringBuilder();
@@ -189,9 +189,40 @@ namespace stockAnalysis
                 da.Dispose();
             }
 
-               
-
             Console.WriteLine(dataFromSQL);
+
+            bool crosses = false;
+
+            foreach (Post name in criteria.post)
+            {
+                if (name.process.ToUpper() == "CROSSES")
+                {
+                    crosses = true;
+                }
+                
+            } 
+            
+
+            foreach (DataRow curRows in currentData.Rows)
+            {
+                DataRow[] rows = dataFromSQL.Select("AggKey = "+ curRows.Field<string>("AggregatedKey").ToUpper());
+
+                if (rows.Count()>0)
+                {
+                    Console.WriteLine(rows.FirstOrDefault());
+                    //if (curRows.Field<string>("").ToUpper() > sqlRows.Field<string>("").ToUpper())
+                    //{
+
+                    //}
+
+
+
+                }
+
+                
+
+            }
+
 
         }
 
