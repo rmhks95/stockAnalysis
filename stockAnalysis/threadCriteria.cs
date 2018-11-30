@@ -26,8 +26,7 @@ namespace stockAnalysis
         public static void Start(DataTable dt)
         {
             var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
-            var list = client.CreateDocumentQuery<Criteria>(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"))
-                                        .ToList();
+            var list = client.CreateDocumentQuery<Criteria>(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets")).ToList();
 
             //number of logical processors
             //Console.WriteLine("Number Of Logical Processors: {0}", Environment.ProcessorCount);
@@ -62,7 +61,7 @@ namespace stockAnalysis
                 //Thread.Sleep(1000); // used to slow it down until actual code is implemented, to make sure it utilizes multiple threads
 
 
-                //if(currentCriteria.Name =="CriteriaSet1")
+                if(currentCriteria.Name =="CriteriaSet1")
                 Plinkq(currentCriteria, dt,myConnection);
 
                //Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
@@ -127,21 +126,20 @@ namespace stockAnalysis
 
         static void postAgg(DataTable currentData, Criteria criteria, SqlConnection myConnection)
         {
-           
 
-                DataTable dataFromSQL = new DataTable();
+            DataTable dataFromSQL = new DataTable();
 
                         
-                string oString = "Select * from Stocks.RunningData where CriteriaSet='"+criteria.Name+"'";
-                SqlCommand oCmd = new SqlCommand(oString, myConnection);
+            string oString = "Select * from Stocks.RunningData where CriteriaSet='"+criteria.Name+"'";
+            SqlCommand oCmd = new SqlCommand(oString, myConnection);
 
 
-                // create data adapter
-                SqlDataAdapter da = new SqlDataAdapter(oCmd);
-                // this will query your database and return the result to your datatable
-                da.Fill(dataFromSQL);
+            // create data adapter
+            SqlDataAdapter da = new SqlDataAdapter(oCmd);
+            // this will query your database and return the result to your datatable
+            da.Fill(dataFromSQL);
                
-                da.Dispose();
+            da.Dispose();
 
             Console.WriteLine(dataFromSQL);
             var addFound = currentData.Clone();
@@ -150,7 +148,7 @@ namespace stockAnalysis
 
                 dataFromSQL.PrimaryKey = new DataColumn[] { dataFromSQL.Columns["AggKey"] };
                 string key = curRows.Field<string>("AggregatedKey");
-                decimal max;
+                decimal max=0;
                 string valueBroke ="";
                 DataRow sqlRow = dataFromSQL.Rows.Find(key);
 
@@ -206,6 +204,7 @@ namespace stockAnalysis
                                 else
                                 {
                                     //not pass max
+                                 
                                 }
                             }
 
@@ -269,7 +268,42 @@ namespace stockAnalysis
                     
                 }
 
+
+
+                string q = "Update stocks.runningdata Set ";
+
+                foreach (DataColumn col in currentData.Columns)
+                    if (col.ColumnName != "AggregatedKey")
+                    {
+                        q += curRows[col].GetType()==curRows["AggregatedKey"].GetType() ?col + "='" + curRows[col] + "',": "";
+                        try
+                        {
+                            if (max == Convert.ToDecimal(curRows[col.ColumnName]))
+                                q += col + "PastMax='" + curRows[col.ColumnName] + "',";
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+
+                q += " where criteriaSet = '" + criteria.Name + "' and aggkey='" + curRows["AggregatedKey"] + "'";
+
+                
+                oCmd = new SqlCommand(oString, myConnection);
+
+                
+
+
+
+
             }
+
+
+
+
+
+
             var printMe = addFound.Copy();
             writeCSV(printMe, null, "PostAggDetails", criteria.Name);
             printMe = addFound.Copy();
@@ -279,8 +313,6 @@ namespace stockAnalysis
             printMe = addFound.Copy();
 
             Console.WriteLine(printMe);
-
-
 
             StringBuilder sb = new StringBuilder();
 

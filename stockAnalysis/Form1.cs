@@ -30,6 +30,7 @@ namespace stockAnalysis
                     csvHandler.GetDataTabletFromCSVFile(path);
                 }
             }
+            Close();
 
         }
     }
