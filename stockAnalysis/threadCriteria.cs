@@ -18,7 +18,11 @@ namespace stockAnalysis
         private const string EndpointUrl = "https://criteria.documents.azure.com:443/";
         private const string PrimaryKey = "eDNWOyfslnhfiiRjoUufC6ADHfcQwgXpB0e5sRCFil35hK4kwy2qU0LtSvBjuqm7BMqE2rt4xcWsOfxl2LrFPw==";
         private DocumentClient client;
-        
+
+
+       
+
+
         public static void Start(DataTable dt)
         {
             var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
@@ -42,6 +46,14 @@ namespace stockAnalysis
             //    Console.WriteLine("Number Of Physical Processors: {0} ", item["NumberOfProcessors"]);
             //}
 
+            var cb = new SqlConnectionStringBuilder();
+            cb.DataSource = "tcp:cis625.database.windows.net,1433";
+            cb.UserID = "admin123";
+            cb.Password = "Nimda123";
+            cb.InitialCatalog = "625data";
+            cb.MultipleActiveResultSets = true;
+            SqlConnection myConnection = new SqlConnection(cb.ConnectionString);
+            myConnection.Open();
 
 
             //forEach(criteria, do this to current criteria)
@@ -51,14 +63,15 @@ namespace stockAnalysis
 
 
                 //if(currentCriteria.Name =="CriteriaSet1")
-                Plinkq(currentCriteria, dt);
+                Plinkq(currentCriteria, dt,myConnection);
 
                //Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
             });
-            Console.WriteLine("done");
+            //Console.WriteLine("done");
+            myConnection.Close();
         }
 
-        static void Plinkq(Criteria currentCriteria, DataTable dt)
+        static void Plinkq(Criteria currentCriteria, DataTable dt, SqlConnection myConnection)
         {
             var results = dt.AsEnumerable();
             EnumerableRowCollection<DataRow> resu;
@@ -109,34 +122,26 @@ namespace stockAnalysis
 
             //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
             Console.WriteLine(aggregatedTable);
-            postAgg(aggregatedTable, currentCriteria);
+            postAgg(aggregatedTable, currentCriteria,myConnection);
         }
 
-        static void postAgg(DataTable dataTable, Criteria criteria)
+        static void postAgg(DataTable dataTable, Criteria criteria, SqlConnection myConnection)
         {
-            
-            var cb = new SqlConnectionStringBuilder();
-            cb.DataSource = "tcp:cis625.database.windows.net,1433";
-            cb.UserID = "admin123";
-            cb.Password = "Nimda123";
-            cb.InitialCatalog = "625data";
+           
 
-            DataTable dataFromSQL = new DataTable();
-            using (SqlConnection myConnection = new SqlConnection(cb.ConnectionString))
-            {
+                DataTable dataFromSQL = new DataTable();
+
                         
-                string oString = "Select * from Stocks.RunningData where CriteriaSet="+criteria.Name;
+                string oString = "Select * from Stocks.RunningData where CriteriaSet='"+criteria.Name+"'";
                 SqlCommand oCmd = new SqlCommand(oString, myConnection);
-                myConnection.Open();
 
 
                 // create data adapter
                 SqlDataAdapter da = new SqlDataAdapter(oCmd);
                 // this will query your database and return the result to your datatable
                 da.Fill(dataFromSQL);
-                myConnection.Close();
+               
                 da.Dispose();
-            }
 
                
 
