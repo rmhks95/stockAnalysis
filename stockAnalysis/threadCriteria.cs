@@ -166,7 +166,7 @@ namespace stockAnalysis
 
                 DataRow rows = dataFromSQL.Rows.Find(key);
 
-                if (false)
+                if (rows != null)
                 {
                     //Console.WriteLine(rows.FirstOrDefault());
                     //if (curRows.Field<string>("").ToUpper() > sqlRows.Field<string>("").ToUpper())
