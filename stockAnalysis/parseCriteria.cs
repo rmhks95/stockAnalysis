@@ -34,7 +34,7 @@ namespace stockAnalysis
             Post post = new Post();
             int index = 0;
 
-            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Cjoew\Google Drive\documents\college\7th Year\CIS 625\stockAnalysis\stockAnalysis\Criteria sets.txt"); 
+            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\Criteria sets.txt"); 
             while ((line = file.ReadLine()) != null)
             {
                 if (!line.StartsWith("--"))
@@ -100,43 +100,41 @@ namespace stockAnalysis
                         post.process = line.Substring(1);
                     }
 
-                    if (string.IsNullOrEmpty(line) && file.ReadLine().StartsWith("--") || file.EndOfStream)
+                    if (file.EndOfStream || (string.IsNullOrEmpty(line)&& (!string.IsNullOrEmpty(criteria.Name))))
                     {
-                        if (criteria.Name != null)
+                        criteria.pre.Add(pre);
+                        criteria.agKey = agKey.Substring(0, agKey.Length - 1);
+                        criteria.agSum = agSum.Substring(0, agSum.Length - 1);
+                        criteria.post.Add(post);
+                        try
                         {
-                            criteria.pre.Add(pre);
-                            criteria.agKey = agKey.Substring(0, agKey.Length - 1);
-                            criteria.agSum = agSum.Substring(0, agSum.Length - 1);
-                            criteria.post.Add(post);
-                            try
-                            {
-                                var cb = new SqlConnectionStringBuilder();
-                                cb.DataSource = "tcp:cis625.database.windows.net,1433";
-                                cb.UserID = "admin123";
-                                cb.Password = "Nimda123";
-                                cb.InitialCatalog = "625data";
-                                
-                                  var propertiesOfUser = client.CreateDocumentQuery<Criteria>(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"))
-                                        .Where(p => p.Name == criteria.Name)
-                                        .ToList(); 
+                            var cb = new SqlConnectionStringBuilder();
+                            cb.DataSource = "tcp:cis625.database.windows.net,1433";
+                            cb.UserID = "admin123";
+                            cb.Password = "Nimda123";
+                            cb.InitialCatalog = "625data";
 
-                                if (!(propertiesOfUser.Count > 0))
+                            var propertiesOfUser = client.CreateDocumentQuery<Criteria>(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"))
+                                  .Where(p => p.Name == criteria.Name)
+                                  .ToList();
+
+                            if (!(propertiesOfUser.Count > 0))
+                            {
+                                using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
                                 {
-                                    using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
-                                    {
-                                        dbConnection.Open();
-                                        string query = string.Format("INSERT INTO CriteriaFiltering.CriteriaSets(Name) Values('{0}')", criteria.Name);
-                                        SqlCommand cmd = new SqlCommand(query, dbConnection);
-                                        cmd.ExecuteNonQuery();
-                                        dbConnection.Close();
-                                    }
-
-                                    Document doc = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"), criteria).Result;
+                                    dbConnection.Open();
+                                    string query = string.Format("INSERT INTO CriteriaFiltering.CriteriaSets(Name) Values('{0}')", criteria.Name);
+                                    SqlCommand cmd = new SqlCommand(query, dbConnection);
+                                    cmd.ExecuteNonQuery();
+                                    dbConnection.Close();
                                 }
-                            }catch(Exception e)
-                            {
-                                Console.WriteLine(e);
+
+                                Document doc = client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets"), criteria).Result;
                             }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
                         }
                     }
                 }

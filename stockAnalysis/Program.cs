@@ -30,7 +30,7 @@ namespace stockAnalysis
             //runDBConnect();
 
             //doing work
-          
+
         }
 
         static void runDBConnect()
