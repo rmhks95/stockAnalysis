@@ -156,7 +156,7 @@ namespace stockAnalysis
                 dataFromSQL.PrimaryKey = new DataColumn[] { dataFromSQL.Columns["AggKey"] };
                 string key = curRows.Field<string>("AggregatedKey");
                 decimal max;
-
+                var valueBroke = new string[criteria.post.Count];
                 DataRow sqlRow = dataFromSQL.Rows.Find(key);
 
                 if (sqlRow != null)
@@ -171,17 +171,20 @@ namespace stockAnalysis
                                 if (Convert.ToDecimal(curRows.Field<string>(name.column)) > Convert.ToDecimal(value) && Convert.ToDecimal(sqlRow.Field<string>(name.column)) < Convert.ToDecimal(value))
                                 {
                                     //crosses
+                                    valueBroke[criteria.post.IndexOf(name)] =value;
 
                                 }
                                 else if (Convert.ToDecimal(curRows.Field<string>(name.column)) < Convert.ToDecimal(value) && Convert.ToDecimal(sqlRow.Field<string>(name.column)) > Convert.ToDecimal(value))
                                 {
                                     //crosses
+                                    valueBroke[criteria.post.IndexOf(name)] = value;
 
                                 }
 
                                 else if(Convert.ToDecimal(curRows.Field<string>(name.column)) == Convert.ToDecimal(value) && Convert.ToDecimal(sqlRow.Field<string>(name.column)) != Convert.ToDecimal(curRows.Field<string>(name.column)))
                                 {
                                     //crosses
+                                    valueBroke[criteria.post.IndexOf(name)] = value;
 
                                 }
                                 else
@@ -198,8 +201,10 @@ namespace stockAnalysis
                             {
                                 if (Convert.ToDecimal(curRows.Field<string>(name.column)) > Convert.ToDecimal(sqlRow.Field<string>(name.column)))
                                 {
-                                    if (Convert.ToDecimal(sqlRow.Field<string>(name.column)) < Convert.ToDecimal(value) && Convert.ToDecimal(curRows.Field<string>(name.column))> Convert.ToDecimal(value)) { 
-                                            //Passes Max
+                                    if (Convert.ToDecimal(sqlRow.Field<string>(name.column)) < Convert.ToDecimal(value) && Convert.ToDecimal(curRows.Field<string>(name.column))> Convert.ToDecimal(value)) {
+                                        //Passes Max
+                                        valueBroke[criteria.post.IndexOf(name)] = value;
+
                                     }
                                     max = Convert.ToDecimal(curRows.Field<string>(name.column));
                                 }
@@ -216,6 +221,7 @@ namespace stockAnalysis
                                 if (Convert.ToDecimal(curRows.Field<string>(name.column)) > Convert.ToDecimal(value))
                                 {
                                     //Passes > 
+                                    valueBroke[criteria.post.IndexOf(name)] = value;
                                 }
                             }
                         }
@@ -226,6 +232,7 @@ namespace stockAnalysis
                                 if (Convert.ToDecimal(curRows.Field<string>(name.column)) >= Convert.ToDecimal(value))
                                 {
                                     //Passes >=
+                                    valueBroke[criteria.post.IndexOf(name)] = value;
                                 }
                             }
                         }
@@ -236,6 +243,7 @@ namespace stockAnalysis
                                 if (Convert.ToDecimal(curRows.Field<string>(name.column)) < Convert.ToDecimal(value))
                                 {
                                     //Passes < 
+                                    valueBroke[criteria.post.IndexOf(name)] = value;
                                 }
                             }
                         }
@@ -245,7 +253,8 @@ namespace stockAnalysis
                             {
                                 if (Convert.ToDecimal(curRows.Field<string>(name.column)) <= Convert.ToDecimal(value))
                                 {
-                                    //Passes <= 
+                                    //Passes <=
+                                    valueBroke[criteria.post.IndexOf(name)] = value;
                                 }
                             }
                         }
@@ -256,8 +265,12 @@ namespace stockAnalysis
                     }
 
                 }
+                if (valueBroke.FirstOrDefault() != null)
+                {
+                    foreach (var value in valueBroke)
+                        Console.WriteLine("Criteria " + criteria.post[Array.IndexOf(valueBroke, value)].process + " " + value);
 
-                
+                }
 
             }
 
