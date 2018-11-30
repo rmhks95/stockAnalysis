@@ -364,7 +364,7 @@ namespace stockAnalysis
 
             string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string criteriaNameFix = criteria.Name.Contains(':') ? criteria.Name.Split(':').First() : criteria.Name;
-            File.WriteAllText(path + "\\" + "ThresholdOutput" + criteriaNameFix + ".csv", sb.ToString());
+            File.WriteAllText(path + "\\results\\" + "ThresholdOutput" + criteriaNameFix + ".csv", sb.ToString());
 
 
         }
@@ -403,7 +403,7 @@ namespace stockAnalysis
 
             string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string criteriaNameFix = criteriaName.Contains(':') ? criteriaName.Split(':').First() : criteriaName;
-            File.WriteAllText(path + "\\" + step+ criteriaNameFix + ".csv", sb.ToString());
+            File.WriteAllText(path + "\\results\\" + step+ criteriaNameFix + ".csv", sb.ToString());
 
 
         }
