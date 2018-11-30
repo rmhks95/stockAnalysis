@@ -61,7 +61,7 @@ namespace stockAnalysis
                 //Thread.Sleep(1000); // used to slow it down until actual code is implemented, to make sure it utilizes multiple threads
 
 
-                if(currentCriteria.Name =="CriteriaSet1")
+                //if(currentCriteria.Name =="CriteriaSet1")
                 Plinkq(currentCriteria, dt,myConnection);
 
                //Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
@@ -363,7 +363,8 @@ namespace stockAnalysis
 
 
             string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            File.WriteAllText(path + "\\" + "ThresholdOutput" + criteria.Name + ".csv", sb.ToString());
+            string criteriaNameFix = criteria.Name.Contains(':') ? criteria.Name.Split(':').First() : criteria.Name;
+            File.WriteAllText(path + "\\" + "ThresholdOutput" + criteriaNameFix + ".csv", sb.ToString());
 
 
         }
@@ -401,7 +402,8 @@ namespace stockAnalysis
 
 
             string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            File.WriteAllText(path + "\\" + step+ criteriaName + ".csv", sb.ToString());
+            string criteriaNameFix = criteriaName.Contains(':') ? criteriaName.Split(':').First() : criteriaName;
+            File.WriteAllText(path + "\\" + step+ criteriaNameFix + ".csv", sb.ToString());
 
 
         }
