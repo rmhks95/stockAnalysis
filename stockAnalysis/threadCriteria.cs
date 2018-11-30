@@ -125,7 +125,7 @@ namespace stockAnalysis
             postAgg(aggregatedTable, currentCriteria,myConnection);
         }
 
-        static void postAgg(DataTable dataTable, Criteria criteria, SqlConnection myConnection)
+        static void postAgg(DataTable currentData, Criteria criteria, SqlConnection myConnection)
         {
            
 
@@ -159,11 +159,16 @@ namespace stockAnalysis
 
             foreach (DataRow curRows in currentData.Rows)
             {
-                DataRow[] rows = dataFromSQL.Select("AggKey = "+ curRows.Field<string>("AggregatedKey").ToUpper());
+                //var rows = dataFromSQL.AsEnumerable().Where(x => x.Field<string>("AggKey").ToUpper() == curRows.Field<string>("AggregatedKey").ToUpper()).Select(s => new { things = s.Field<string>("AggKey").FirstOrDefault() });
 
-                if (rows.Count()>0)
+                dataFromSQL.PrimaryKey = new DataColumn[] { dataFromSQL.Columns["AggKey"] };
+                string key = curRows.Field<string>("AggregatedKey");
+
+                DataRow rows = dataFromSQL.Rows.Find(key);
+
+                if (false)
                 {
-                    Console.WriteLine(rows.FirstOrDefault());
+                    //Console.WriteLine(rows.FirstOrDefault());
                     //if (curRows.Field<string>("").ToUpper() > sqlRows.Field<string>("").ToUpper())
                     //{
 
