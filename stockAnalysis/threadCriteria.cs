@@ -144,22 +144,12 @@ namespace stockAnalysis
                 da.Dispose();
 
             Console.WriteLine(dataFromSQL);
-
-            StringBuilder sb = new StringBuilder();
-
-            IEnumerable<string> columnNames = currentData.Columns.Cast<DataColumn>().
-                                              Select(column => column.ColumnName);
-            sb.AppendLine(string.Join(",", columnNames));
-
-            foreach (DataRow row in currentData.Rows)
-            {
-                IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
-                sb.AppendLine(string.Join(",", fields));
-            }
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            File.WriteAllText(path+"\\test" + criteria.Name+".csv", sb.ToString());
-
-
+            var printMe = currentData.Copy();
+            writeCSV(printMe, null, "dataIntoPostDetails", criteria.Name);
+            printMe = currentData.Copy();
+            var list = criteria.agSum.Split(',').ToList();
+            list.Add("AggregatedKey");
+            writeCSV(printMe, list, "dataIntoPostAggFiltered", criteria.Name);
             foreach (DataRow curRows in currentData.Rows)
             {
 
@@ -273,6 +263,45 @@ namespace stockAnalysis
 
 
         }
+
+
+
+         static void writeCSV(DataTable currentData, List<string> columns, string step, string criteriaName)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (columns != null)
+            {
+                var removeRows = new List<string>();
+                foreach(DataColumn column in currentData.Columns)
+                {
+                    if (!(columns.Contains(column.ColumnName))) removeRows.Add(column.ColumnName);
+
+                }
+                foreach(var name in removeRows)
+                {
+                    currentData.Columns.Remove(name);
+                }
+
+            }
+            IEnumerable<string> columnNames = currentData.Columns.Cast<DataColumn>().
+                                                  Select(column => column.ColumnName);
+            sb.AppendLine(string.Join(",", columnNames));
+
+            foreach (DataRow row in currentData.Rows)
+            {
+                IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
+                sb.AppendLine(string.Join(",", fields));
+            }
+            
+
+
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            File.WriteAllText(path + "\\" + step+ criteriaName + ".csv", sb.ToString());
+
+
+        }
+
 
     }
 
