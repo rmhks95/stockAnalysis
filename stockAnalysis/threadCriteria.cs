@@ -18,7 +18,11 @@ namespace stockAnalysis
         private const string EndpointUrl = "https://criteria.documents.azure.com:443/";
         private const string PrimaryKey = "eDNWOyfslnhfiiRjoUufC6ADHfcQwgXpB0e5sRCFil35hK4kwy2qU0LtSvBjuqm7BMqE2rt4xcWsOfxl2LrFPw==";
         private DocumentClient client;
-        
+
+
+       
+
+
         public static void Start(DataTable dt)
         {
             var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
@@ -42,6 +46,14 @@ namespace stockAnalysis
             //    Console.WriteLine("Number Of Physical Processors: {0} ", item["NumberOfProcessors"]);
             //}
 
+            var cb = new SqlConnectionStringBuilder();
+            cb.DataSource = "tcp:cis625.database.windows.net,1433";
+            cb.UserID = "admin123";
+            cb.Password = "Nimda123";
+            cb.InitialCatalog = "625data";
+            cb.MultipleActiveResultSets = true;
+            SqlConnection myConnection = new SqlConnection(cb.ConnectionString);
+            myConnection.Open();
 
 
             //forEach(criteria, do this to current criteria)
@@ -51,14 +63,15 @@ namespace stockAnalysis
 
 
                 //if(currentCriteria.Name =="CriteriaSet1")
-                Plinkq(currentCriteria, dt);
+                Plinkq(currentCriteria, dt,myConnection);
 
                //Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
             });
-            Console.WriteLine("done");
+            //Console.WriteLine("done");
+            myConnection.Close();
         }
 
-        static void Plinkq(Criteria currentCriteria, DataTable dt)
+        static void Plinkq(Criteria currentCriteria, DataTable dt, SqlConnection myConnection)
         {
             var results = dt.AsEnumerable();
             EnumerableRowCollection<DataRow> resu;
@@ -98,61 +111,10 @@ namespace stockAnalysis
                 results = table.AsEnumerable();
             }
             resu = table.AsEnumerable();
-            IEnumerable<string> columnsToGroupBy = currentCriteria.agKey.Split(',');
-            IEnumerable<string> sumsToSelect = currentCriteria.agSum.Split(',');
+            
 
-            var keys = currentCriteria.agKey.Split(',');
-
-            var groupList = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])); //.Select(val => new { nK=val.FirstOrDefault().Field<string>(keys[0])+"~"+ val.FirstOrDefault().Field<string>(keys[1]), total=val.Sum(c=>Convert.ToDecimal(c.Field<string>(sumsToSelect.FirstOrDefault()))).ToString()});//new NTuple<object>(from sum in sumsToSelect select val[sum])
-
-            if (resu.Count() == 0)
-            {
-                Console.WriteLine("nothing found");
-                return;
-            }
-
-            DataTable aggregatedTable = resu.FirstOrDefault().Table.Clone();
-            aggregatedTable.Columns.Add("AggregatedKey", typeof(string));
-            /*foreach (DataColumn col in resu.ElementAtOrDefault(0).Table.Columns)
-            {
-                table.Columns.Add(col.ColumnName, col.DataType);
-            }*/
-
-            //DataRow toAdd = aggregatedTable.NewRow();
-            //toAdd.Table.Columns.Add("AggregatedKey", typeof(string));
-            //toAdd["AggregatedKey"] = aggregatedKey;
-
-           
-
-            foreach (var group in groupList)
-            {
-                string aggregatedKey = "";
-                DataRow toAdd = group.FirstOrDefault();
-                if(!(toAdd.Table.Columns.Contains("AggregatedKey")))toAdd.Table.Columns.Add("AggregatedKey", typeof(string));
-                for (int i = 1; i < group.Count(); i++)
-                { //each row in the group (except first)
-                    for (int j = 0; j < group.ElementAt(i).Table.Columns.Count; j++) //each column in row
-                    {
-                        var colName = group.ElementAt(i).Table.Columns[j].ColumnName;
-                        if (sumsToSelect.Contains(colName))
-                        {
-                            toAdd[colName] = Convert.ToDouble(toAdd[colName].ToString()) + Convert.ToDouble(group.ElementAt(i)[colName].ToString());
-                        }
-                        else if (toAdd[colName].ToString() != group.ElementAt(i)[colName].ToString())
-                        {
-                            toAdd[colName] = null;//group.ElementAt(i)[colName].ToString();
-                        }
-                    }
-
-                }
-                for (int i = 0; i < columnsToGroupBy.Count(); i++)
-                {
-                    if (i == 0) aggregatedKey = toAdd[columnsToGroupBy.ElementAt(i)].ToString();
-                    else aggregatedKey += "~" + toAdd[columnsToGroupBy.ElementAt(i)].ToString();
-                }
-                toAdd["AggregatedKey"] = aggregatedKey;
-                aggregatedTable.Rows.Add(toAdd.ItemArray);
-            }
+            DataTable aggregatedTable = aggregation.Aggregate(resu, currentCriteria);
+            if (aggregatedTable.Rows.Count == 0) return;
 
             //printDataTable.PrintTable(aggregatedTable);
             
@@ -160,34 +122,26 @@ namespace stockAnalysis
 
             //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
             Console.WriteLine(aggregatedTable);
-            postAgg(aggregatedTable, currentCriteria);
+            postAgg(aggregatedTable, currentCriteria,myConnection);
         }
 
-        static void postAgg(DataTable currentData, Criteria criteria)
+        static void postAgg(DataTable dataTable, Criteria criteria, SqlConnection myConnection)
         {
-            
-            var cb = new SqlConnectionStringBuilder();
-            cb.DataSource = "tcp:cis625.database.windows.net,1433";
-            cb.UserID = "admin123";
-            cb.Password = "Nimda123";
-            cb.InitialCatalog = "625data";
+           
 
-            DataTable dataFromSQL = new DataTable();
-            using (SqlConnection myConnection = new SqlConnection(cb.ConnectionString))
-            {
+                DataTable dataFromSQL = new DataTable();
+
                         
-                string oString = "Select * from Stocks.RunningData where CriteriaSet="+criteria.Name;
+                string oString = "Select * from Stocks.RunningData where CriteriaSet='"+criteria.Name+"'";
                 SqlCommand oCmd = new SqlCommand(oString, myConnection);
-                myConnection.Open();
 
 
                 // create data adapter
                 SqlDataAdapter da = new SqlDataAdapter(oCmd);
                 // this will query your database and return the result to your datatable
                 da.Fill(dataFromSQL);
-                myConnection.Close();
+               
                 da.Dispose();
-            }
 
             Console.WriteLine(dataFromSQL);
 
