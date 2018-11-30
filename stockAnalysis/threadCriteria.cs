@@ -9,7 +9,7 @@ using Microsoft.Azure.Documents.Linq;
 using System.Threading;
 using System.Data.SqlClient;
 using System.Data;
-
+using System.IO;
 
 namespace stockAnalysis
 {
@@ -145,8 +145,20 @@ namespace stockAnalysis
 
             Console.WriteLine(dataFromSQL);
 
+            StringBuilder sb = new StringBuilder();
 
-            
+            IEnumerable<string> columnNames = currentData.Columns.Cast<DataColumn>().
+                                              Select(column => column.ColumnName);
+            sb.AppendLine(string.Join(",", columnNames));
+
+            foreach (DataRow row in currentData.Rows)
+            {
+                IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
+                sb.AppendLine(string.Join(",", fields));
+            }
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            File.WriteAllText(path+"\\test" + criteria.Name+".csv", sb.ToString());
+
 
             foreach (DataRow curRows in currentData.Rows)
             {
