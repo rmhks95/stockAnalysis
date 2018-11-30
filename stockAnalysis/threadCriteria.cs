@@ -145,36 +145,113 @@ namespace stockAnalysis
 
             Console.WriteLine(dataFromSQL);
 
-            bool crosses = false;
 
-            foreach (Post name in criteria.post)
-            {
-                if (name.process.ToUpper() == "CROSSES")
-                {
-                    crosses = true;
-                }
-                
-            } 
             
 
             foreach (DataRow curRows in currentData.Rows)
             {
-                //var rows = dataFromSQL.AsEnumerable().Where(x => x.Field<string>("AggKey").ToUpper() == curRows.Field<string>("AggregatedKey").ToUpper()).Select(s => new { things = s.Field<string>("AggKey").FirstOrDefault() });
 
                 dataFromSQL.PrimaryKey = new DataColumn[] { dataFromSQL.Columns["AggKey"] };
                 string key = curRows.Field<string>("AggregatedKey");
+                decimal max;
 
-                DataRow rows = dataFromSQL.Rows.Find(key);
+                DataRow sqlRow = dataFromSQL.Rows.Find(key);
 
-                if (rows != null)
+                if (sqlRow != null)
                 {
-                    //Console.WriteLine(rows.FirstOrDefault());
-                    //if (curRows.Field<string>("").ToUpper() > sqlRows.Field<string>("").ToUpper())
-                    //{
 
-                    //}
+                    foreach (Post name in criteria.post)
+                    {
+                        if (name.process.ToUpper() == "CROSSES")
+                        {
+                            foreach (var value in name.values)
+                            {
+                                if (Convert.ToDecimal(curRows.Field<string>(name.column)) > Convert.ToDecimal(value) && Convert.ToDecimal(sqlRow.Field<string>(name.column)) < Convert.ToDecimal(value))
+                                {
+                                    //crosses
 
+                                }
+                                else if (Convert.ToDecimal(curRows.Field<string>(name.column)) < Convert.ToDecimal(value) && Convert.ToDecimal(sqlRow.Field<string>(name.column)) > Convert.ToDecimal(value))
+                                {
+                                    //crosses
 
+                                }
+
+                                else if(Convert.ToDecimal(curRows.Field<string>(name.column)) == Convert.ToDecimal(value) && Convert.ToDecimal(sqlRow.Field<string>(name.column)) != Convert.ToDecimal(curRows.Field<string>(name.column)))
+                                {
+                                    //crosses
+
+                                }
+                                else
+                                {
+                                    //doesnt cross
+                                }
+
+                            }
+
+                        }
+                        else if (name.process.ToUpper() == "MAX")
+                        {
+                            foreach (var value in name.values)
+                            {
+                                if (Convert.ToDecimal(curRows.Field<string>(name.column)) > Convert.ToDecimal(sqlRow.Field<string>(name.column)))
+                                {
+                                    if (Convert.ToDecimal(sqlRow.Field<string>(name.column)) < Convert.ToDecimal(value) && Convert.ToDecimal(curRows.Field<string>(name.column))> Convert.ToDecimal(value)) { 
+                                            //Passes Max
+                                    }
+                                    max = Convert.ToDecimal(curRows.Field<string>(name.column));
+                                }
+                                else
+                                {
+                                    //not pass max
+                                }
+                            }
+
+                        }
+                        else if (name.process == ">")
+                        {
+                            foreach (var value in name.values) {
+                                if (Convert.ToDecimal(curRows.Field<string>(name.column)) > Convert.ToDecimal(value))
+                                {
+                                    //Passes > 
+                                }
+                            }
+                        }
+                        else if (name.process == ">=")
+                        {
+                            foreach (var value in name.values)
+                            {
+                                if (Convert.ToDecimal(curRows.Field<string>(name.column)) >= Convert.ToDecimal(value))
+                                {
+                                    //Passes >=
+                                }
+                            }
+                        }
+                        else if (name.process == "<")
+                        {
+                            foreach (var value in name.values)
+                            {
+                                if (Convert.ToDecimal(curRows.Field<string>(name.column)) < Convert.ToDecimal(value))
+                                {
+                                    //Passes < 
+                                }
+                            }
+                        }
+                        else if (name.process == "<=")
+                        {
+                            foreach (var value in name.values)
+                            {
+                                if (Convert.ToDecimal(curRows.Field<string>(name.column)) <= Convert.ToDecimal(value))
+                                {
+                                    //Passes <= 
+                                }
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("Post agg process not known");
+                        }
+                    }
 
                 }
 
