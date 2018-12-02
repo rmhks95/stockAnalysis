@@ -61,7 +61,7 @@ namespace stockAnalysis
                 //Thread.Sleep(1000); // used to slow it down until actual code is implemented, to make sure it utilizes multiple threads
 
 
-                //if(currentCriteria.Name =="CriteriaSet1")
+                //if(currentCriteria.Name =="29: Criteria Set 28(Preferred)")
                 Plinkq(currentCriteria, dt,myConnection);
 
                //Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
@@ -97,7 +97,7 @@ namespace stockAnalysis
                 foreach (var value in pre.values)
                 {
                     resu = results.Where(row =>
-                            pre.process == "=" ? row.Field<string>(pre.column).ToUpper() == value.ToUpper() : (pre.process == "IN" ? row.Field<string>(pre.column).ToUpper().Contains(value.ToUpper()) : (pre.process == "<>" ? row.Field<string>(pre.column).ToUpper() != value.ToUpper() : throw new Exception("Pre-agg process not reconized")))
+                            pre.process == "=" || pre.process == "IN" ? row.Field<string>(pre.column).ToUpper() == value.ToUpper() : (pre.process == "<>" ? row.Field<string>(pre.column).ToUpper() != value.ToUpper() : throw new Exception("Pre-agg process not reconized"))
 
                          );
         
@@ -116,8 +116,8 @@ namespace stockAnalysis
             if (aggregatedTable.Rows.Count == 0) return;
 
             //printDataTable.PrintTable(aggregatedTable);
-            
-            
+
+            writeCSV(aggregatedTable, null, "test", currentCriteria.Name);
 
             //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
             Console.WriteLine(aggregatedTable);
@@ -278,8 +278,10 @@ namespace stockAnalysis
                         q += curRows[col].GetType()==curRows["AggregatedKey"].GetType() ?col + "='" + curRows[col] + "',": "";
                         try
                         {
-                            if (max == Convert.ToDecimal(curRows[col.ColumnName]))
-                                q += col + "PastMax='" + curRows[col.ColumnName] + "',";
+                            if(col.ColumnName == "value"||col.ColumnName=="sharesheld"||col.ColumnName=="percentagesharesheld")
+                                if(curRows[col.ColumnName].GetType() == curRows["AggregatedKey"].GetType())
+                                if (max == Convert.ToDecimal(curRows[col.ColumnName]))
+                                    q += col + "PastMax='" + curRows[col.ColumnName] + "',";
                         }
                         catch
                         {
