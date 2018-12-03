@@ -61,7 +61,7 @@ namespace stockAnalysis
                 //Thread.Sleep(1000); // used to slow it down until actual code is implemented, to make sure it utilizes multiple threads
 
 
-                //if(currentCriteria.Name =="CriteriaSet1")
+                if(currentCriteria.Name =="CriteriaSet1")
                 Plinkq(currentCriteria, dt,myConnection);
 
                //Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
@@ -292,16 +292,7 @@ namespace stockAnalysis
                 
                 oCmd = new SqlCommand(oString, myConnection);
 
-                
-
-
-
-
             }
-
-
-
-
 
 
             var printMe = addFound.Copy();
@@ -366,6 +357,28 @@ namespace stockAnalysis
             string criteriaNameFix = criteria.Name.Contains(':') ? criteria.Name.Split(':').First() : criteria.Name;
             File.WriteAllText(path + "\\results\\" + "ThresholdOutput" + criteriaNameFix + ".csv", sb.ToString());
 
+
+        }
+
+        static void insertInfo()
+        {
+            var cb = new SqlConnectionStringBuilder();
+            cb.DataSource = "tcp:cis625.database.windows.net,1433";
+            cb.UserID = "admin123";
+            cb.Password = "Nimda123";
+            cb.InitialCatalog = "625data";
+
+            using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
+            {
+                dbConnection.Open();
+                string query = string.Format("INSERT INTO Stocks.RunningData() " +
+                    "VALUES()"
+                    );
+                SqlCommand cmd = new SqlCommand(query, dbConnection);
+                cmd.ExecuteNonQuery();
+                dbConnection.Close();
+            }
+           
 
         }
 
