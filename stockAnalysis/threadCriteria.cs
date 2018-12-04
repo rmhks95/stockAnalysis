@@ -353,7 +353,7 @@ namespace stockAnalysis
             cb.Password = "Nimda123";
             cb.InitialCatalog = "625data";
 
-            string q = "Update stocks.runningdata Set ";
+            string q = "Update Set ";
 
             foreach (DataColumn col in currentData.Columns)
                 if (col.ColumnName != "AggregatedKey")
@@ -371,16 +371,15 @@ namespace stockAnalysis
 
                     }
                 }
-
-            q += " where criteriaSet = '" + criteria.Name + "' and aggkey='" + curRows["AggregatedKey"] + "'";
-
+            q = q.Substring(0, q.Length - 1);
+            
             using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
             {
                 dbConnection.Open();
-                string query = string.Format("MERGE Stocks.RunningData S ON (S.CriteriaSet = " + criteria.Name + " and S.AggKey = " +curRows["AggregatedKey"] + ") WHEN Mathced Then " +
+                string query = string.Format("MERGE Stocks.RunningData as S using criteriafiltering.criteriasets as r ON (S.CriteriaSet = '" + criteria.Name + "' and S.AggKey = '" +curRows["AggregatedKey"] + "') WHEN Matched Then " +
                     q +
-                    "when Not Matched Then INSERT INTO Stocks.RunningData(AggKey,CriteriaSet,StockCode,StockType,HolderID,HolderCountry,SharesHeld,SharesHeldPastMax,PercentageSharesHeld,PercentagesSharesHeldPastMax,Direction,Value,ValuePastMax) " +
-                    "VALUES('"+ curRows["AggregatedKey"] +"','" + criteria.Name+ "','" + curRows["stockcode"] + "','"+ curRows["stocktype"] + "','"+ curRows["holderid"] +"','"+ curRows["holdercountry"] + "','"+ curRows["sharesheld"] + "','" + curRows["sharesheld"] + "','"+ curRows["percentagesharesheld"] + "','" + curRows["percentagesharesheld"] + "','"+ curRows["direction"] + "','"+ curRows["value"] + "','" + curRows["value"] + "',')"
+                    "when Not Matched Then INSERT (AggKey,CriteriaSet,StockCode,StockType,HolderID,HolderCountry,SharesHeld,SharesHeldPastMax,PercentageSharesHeld,PercentagesSharesHeldPastMax,Direction,Value,ValuePastMax) " +
+                    "VALUES('"+ curRows["AggregatedKey"] +"','" + criteria.Name+ "','" + curRows["stockcode"] + "','"+ curRows["stocktype"] + "','"+ curRows["holderid"] +"','"+ curRows["holdercountry"] + "','"+ curRows["sharesheld"] + "','" + curRows["sharesheld"] + "','"+ curRows["percentagesharesheld"] + "','" + curRows["percentagesharesheld"] + "','"+ curRows["direction"] + "','"+ curRows["value"] + "','" + curRows["value"] + "');"
                     );
                 SqlCommand cmd = new SqlCommand(query, dbConnection);
                 cmd.ExecuteNonQuery();
