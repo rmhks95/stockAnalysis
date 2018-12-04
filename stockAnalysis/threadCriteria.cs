@@ -381,7 +381,7 @@ namespace stockAnalysis
             }
             else
             {
-                q = "Update stock.runningData Set ";
+                q = "Update Stocks.RunningData Set ";
                 foreach (DataColumn col in currentData.Columns)
                     if (col.ColumnName != "AggregatedKey")
                     {
