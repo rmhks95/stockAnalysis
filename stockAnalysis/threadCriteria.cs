@@ -230,9 +230,6 @@ namespace stockAnalysis
                     }
 
                 }
-
-                
-
                 if (valueBroke!="")
                 {
                     addFound.Columns.Add("threshold");
@@ -245,7 +242,7 @@ namespace stockAnalysis
 
                 insertRunningInfo(curRows, currentData, max, criteria);
 
-
+                
                 oCmd = new SqlCommand(oString, myConnection);
                
 
