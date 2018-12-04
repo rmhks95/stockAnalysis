@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Data.SqlClient;
 
 namespace stockAnalysis
 {
@@ -29,6 +30,21 @@ namespace stockAnalysis
                     string path = file;
                     csvHandler.GetDataTabletFromCSVFile(path);
                 }
+            }
+
+            var cb = new SqlConnectionStringBuilder();
+            cb.DataSource = "tcp:cis625.database.windows.net,1433";
+            cb.UserID = "admin123";
+            cb.Password = "Nimda123";
+            cb.InitialCatalog = "625data";
+            cb.MultipleActiveResultSets = true;
+            SqlConnection myConnection = new SqlConnection(cb.ConnectionString);
+            myConnection.Open();
+
+            using (SqlCommand myCmd = new SqlCommand("EXEC updateData",myConnection))
+            {
+                myCmd.CommandType = CommandType.Text;
+                myCmd.ExecuteNonQuery();
             }
             Close();
 

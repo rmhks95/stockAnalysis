@@ -115,10 +115,11 @@ namespace stockAnalysis
 
             var addFound = currentData.Clone();
             currentData.Columns.Add("Criteria");
-            
+            currentData.Columns.Add("SharesHeldPastMax");
+            currentData.Columns.Add("PercentageSharesHeldPastMax");
+            currentData.Columns.Add("ValuePastMax");
             foreach (DataRow curRows in currentData.Rows)
             {
-                curRows["Criteria"] = criteria.Name;
                 dataFromSQL.PrimaryKey = new DataColumn[] { dataFromSQL.Columns["AggKey"] };
                 string key = curRows.Field<string>("AggregatedKey");
                 decimal max=0;
@@ -165,14 +166,15 @@ namespace stockAnalysis
                         {
                             foreach (var value in name.values)
                             {
-                                if (Convert.ToDecimal(curRows.Field<string>(name.column)) > Convert.ToDecimal(sqlRow.Field<string>(name.column)))
+                                if (Convert.ToDecimal(curRows.Field<string>(name.column)) >= Convert.ToDecimal(sqlRow.Field<string>(name.column)))
                                 {
                                     if (Convert.ToDecimal(sqlRow.Field<string>(name.column)) < Convert.ToDecimal(value) && Convert.ToDecimal(curRows.Field<string>(name.column))> Convert.ToDecimal(value)) {
                                         //Passes Max
                                         valueBroke = value;
 
                                     }
-                                    max = Convert.ToDecimal(curRows.Field<string>(name.column));
+                                    curRows[name.column.Substring(0, 1).ToUpper() + name.column.Substring(1) + "PastMax"] = curRows[name.column];
+
                                 }
                                 else
                                 {
@@ -269,13 +271,13 @@ namespace stockAnalysis
 
             //add current data currentData
 
-            using (myConnection)
-            {
-                StringBuilder sCommand = new StringBuilder("Insert Into stocks.temptable(stockcode, stocktype, holderid, holdercountry,sharesheld, percentagesharesheld, direction, value, aggkey, criteriaset) VALUES");
+            //using (myConnection)
+            //{
+                StringBuilder sCommand = new StringBuilder("Insert Into stocks.temptable VALUES");
                 List<string> Rows = new List<string>();
                 foreach(DataRow row in currentData.Rows)
                 {
-                    Rows.Add(string.Format("('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}')", row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]));
+                    Rows.Add(string.Format("('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}')", row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], criteria.Name, row[10], row[11], row[12]));
                 }
                 sCommand.Append(string.Join(",", Rows));
                 sCommand.Append(";");
@@ -285,7 +287,7 @@ namespace stockAnalysis
                     myCmd.CommandType = CommandType.Text;
                     myCmd.ExecuteNonQuery();
                 }
-            }
+            //}
         
 
 
@@ -355,7 +357,7 @@ namespace stockAnalysis
         }
 
 
-        static void insertRunningInfo(DataRow curRows, DataTable currentData, decimal max, Criteria criteria)
+        /*static void insertRunningInfo(DataRow curRows, DataTable currentData, decimal max, Criteria criteria)
         {
             var cb = new SqlConnectionStringBuilder();
             DataTable dataCheck = new DataTable();
@@ -426,7 +428,7 @@ namespace stockAnalysis
             }
             
 
-        }
+        }*/
 
 
         static void writeCSV(DataTable currentData, List<string> columns, string step, string criteriaName)
