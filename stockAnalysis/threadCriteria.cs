@@ -387,7 +387,7 @@ namespace stockAnalysis
 
             foreach (DataRow row in printMe.Rows)
             {
-                IEnumerable<string> fields = row.ItemArray.Select(field => field.ToString());
+                IEnumerable<string> fields = row.ItemArray.Select(field => { field = field.ToString().Replace(",", ""); return field.ToString(); });
                 sb.AppendLine(string.Join(",", fields));
             }
 
