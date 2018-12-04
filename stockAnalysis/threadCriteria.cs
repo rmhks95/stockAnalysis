@@ -114,9 +114,11 @@ namespace stockAnalysis
             da.Dispose();
 
             var addFound = currentData.Clone();
+            currentData.Columns.Add("Criteria");
+            
             foreach (DataRow curRows in currentData.Rows)
             {
-
+                curRows["Criteria"] = criteria.Name;
                 dataFromSQL.PrimaryKey = new DataColumn[] { dataFromSQL.Columns["AggKey"] };
                 string key = curRows.Field<string>("AggregatedKey");
                 decimal max=0;
@@ -240,17 +242,56 @@ namespace stockAnalysis
                 }
 
 
-                insertRunningInfo(curRows, currentData, max, criteria);
+                //insertRunningInfo(curRows, currentData, max, criteria);
 
-                
+                /*using (SqlBulkCopy bulkCopy = new SqlBulkCopy(myConnection))
+                {
+                    bulkCopy.DestinationTableName =
+                        "Stocks.TempTable";
+
+                    try
+                    {
+                        // Write from the source to the destination.
+                        bulkCopy.WriteToServer(curRows.Table);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }*/
+
+
                 oCmd = new SqlCommand(oString, myConnection);
                
 
             }
 
 
+            //add current data currentData
 
-            var printMe = addFound.Copy();
+            using (myConnection)
+            {
+                StringBuilder sCommand = new StringBuilder("Insert Into stocks.temptable(stockcode, stocktype, holderid, holdercountry,sharesheld, percentagesharesheld, direction, value, aggkey, criteriaset) VALUES");
+                List<string> Rows = new List<string>();
+                foreach(DataRow row in currentData.Rows)
+                {
+                    Rows.Add(string.Format("('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}')", row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]));
+                }
+                sCommand.Append(string.Join(",", Rows));
+                sCommand.Append(";");
+                //myConnection.Open();
+                using (SqlCommand myCmd = new SqlCommand(sCommand.ToString(), myConnection))
+                {
+                    myCmd.CommandType = CommandType.Text;
+                    myCmd.ExecuteNonQuery();
+                }
+            }
+        
+
+
+
+
+        var printMe = addFound.Copy();
             writeCSV(printMe, null, "PostAggDetails", criteria.Name);
             printMe = addFound.Copy();
             var list = criteria.agSum.Split(',').ToList();
@@ -342,8 +383,6 @@ namespace stockAnalysis
             string q;
 
 
-           
-           
             if (dataCheck.Rows.Count < 1)
             {
                 q = "INSERT into stocks.runningdata (AggKey, CriteriaSet, StockCode, StockType, HolderID, HolderCountry, SharesHeld, SharesHeldPastMax, PercentageSharesHeld, PercentageSharesHeldPastMax, Direction, Value, ValuePastMax) " +
@@ -369,6 +408,7 @@ namespace stockAnalysis
 
                         }
                     }
+
                 q = q.Substring(0, q.Length - 1);
                 q += "where criteriaSet='" + criteria.Name + "' and AggKey='" + curRows["AggregatedKey"] + "'";
 
