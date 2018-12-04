@@ -41,7 +41,7 @@ namespace stockAnalysis
             
             Parallel.ForEach(list, (currentCriteria) =>
             {
-                if(currentCriteria.Name =="29: Criteria Set 28(Preferred)")
+                //if(currentCriteria.Name =="29: Criteria Set 28(Preferred)")
                 Plinkq(currentCriteria, dt,myConnection);
 
             });
