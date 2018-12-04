@@ -28,22 +28,6 @@ namespace stockAnalysis
             var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
             var list = client.CreateDocumentQuery<Criteria>(UriFactory.CreateDocumentCollectionUri("criteria", "criteriaSets")).ToList();
 
-            //number of logical processors
-            //Console.WriteLine("Number Of Logical Processors: {0}", Environment.ProcessorCount);
-
-            ////number of cores
-            //int coreCount = 0;
-            //foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get())
-            //{
-            //    coreCount += int.Parse(item["NumberOfCores"].ToString());
-            //}
-            //Console.WriteLine("Number Of Cores: {0}", coreCount);
-
-            ////number of physical processors
-            //foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_ComputerSystem").Get())
-            //{
-            //    Console.WriteLine("Number Of Physical Processors: {0} ", item["NumberOfProcessors"]);
-            //}
 
             var cb = new SqlConnectionStringBuilder();
             cb.DataSource = "tcp:cis625.database.windows.net,1433";
@@ -54,19 +38,13 @@ namespace stockAnalysis
             SqlConnection myConnection = new SqlConnection(cb.ConnectionString);
             myConnection.Open();
 
-
-            //forEach(criteria, do this to current criteria)
+            
             Parallel.ForEach(list, (currentCriteria) =>
             {
-                //Thread.Sleep(1000); // used to slow it down until actual code is implemented, to make sure it utilizes multiple threads
-
-
                 if(currentCriteria.Name =="29: Criteria Set 28(Preferred)")
                 Plinkq(currentCriteria, dt,myConnection);
 
-               //Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
             });
-            //Console.WriteLine("done");
             myConnection.Close();
         }
 
@@ -115,12 +93,6 @@ namespace stockAnalysis
             DataTable aggregatedTable = aggregation.Aggregate(resu, currentCriteria);
             if (aggregatedTable.Rows.Count == 0) return;
 
-            //printDataTable.PrintTable(aggregatedTable);
-
-            writeCSV(aggregatedTable, null, "test", currentCriteria.Name);
-
-            //var news = resu.GroupBy(x => new NTuple<object>(from column in columnsToGroupBy select x[column])).Select(val => val.First());//new NTuple<object>(from sum in sumsToSelect select val[sum])
-            Console.WriteLine(aggregatedTable);
             postAgg(aggregatedTable, currentCriteria,myConnection);
         }
 
@@ -285,8 +257,6 @@ namespace stockAnalysis
             list.Add("AggregatedKey");
             writeCSV(printMe, list, "PostAggFiltered", criteria.Name);
             printMe = addFound.Copy();
-
-            Console.WriteLine(printMe);
 
             StringBuilder sb = new StringBuilder();
 

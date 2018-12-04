@@ -20,7 +20,6 @@ namespace stockAnalysis
 
             if (resu.Count() == 0)
             {
-                Console.WriteLine("nothing found");
                 return new DataTable();
             }
 
