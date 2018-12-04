@@ -355,6 +355,7 @@ namespace stockAnalysis
                 foreach (DataColumn col in currentData.Columns)
                     if (col.ColumnName != "AggregatedKey")
                     {
+                        if (curRows[col.ColumnName].ToString().Contains('\'')) curRows[col.ColumnName].ToString().Replace("'", "''");
                         q += curRows[col].GetType() == curRows["AggregatedKey"].GetType() ? col + "='" + curRows[col] + "'," : "";
                         try
                         {
