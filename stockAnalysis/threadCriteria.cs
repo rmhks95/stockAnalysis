@@ -231,7 +231,7 @@ namespace stockAnalysis
 
                 }
 
-                insertRunningInfo(curRows, currentData, max, criteria);
+                
 
                 if (valueBroke!="")
                 {
@@ -243,9 +243,9 @@ namespace stockAnalysis
                 }
 
 
-                
+                insertRunningInfo(curRows, currentData, max, criteria);
 
-                
+
                 oCmd = new SqlCommand(oString, myConnection);
                
 
@@ -356,7 +356,7 @@ namespace stockAnalysis
             {
                 q = "Update Stocks.RunningData Set ";
                 foreach (DataColumn col in currentData.Columns)
-                    if (col.ColumnName != "AggregatedKey")
+                    if (col.ColumnName != "AggregatedKey" && col.ColumnName!="threshold")
                     {
                         if (curRows[col.ColumnName].ToString().Contains('\'')) curRows[col.ColumnName].ToString().Replace("'", "''");
                         q += curRows[col].GetType() == curRows["AggregatedKey"].GetType() ? col + "='" + curRows[col] + "'," : "";
