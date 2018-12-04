@@ -44,6 +44,7 @@ namespace stockAnalysis
             using (SqlCommand myCmd = new SqlCommand("EXEC updateData",myConnection))
             {
                 myCmd.CommandType = CommandType.Text;
+                myCmd.CommandTimeout = 0;
                 myCmd.ExecuteNonQuery();
             }
             Close();
