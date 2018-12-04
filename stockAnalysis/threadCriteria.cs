@@ -61,7 +61,7 @@ namespace stockAnalysis
                 //Thread.Sleep(1000); // used to slow it down until actual code is implemented, to make sure it utilizes multiple threads
 
 
-                //if(currentCriteria.Name =="29: Criteria Set 28(Preferred)")
+                if(currentCriteria.Name =="29: Criteria Set 28(Preferred)")
                 Plinkq(currentCriteria, dt,myConnection);
 
                //Console.WriteLine("Processing {0} on thread {1}", currentCriteria, Thread.CurrentThread.ManagedThreadId);//Check to see what threads it is using
@@ -141,7 +141,6 @@ namespace stockAnalysis
                
             da.Dispose();
 
-            Console.WriteLine(dataFromSQL);
             var addFound = currentData.Clone();
             foreach (DataRow curRows in currentData.Rows)
             {
@@ -348,40 +347,69 @@ namespace stockAnalysis
         static void insertRunningInfo(DataRow curRows, DataTable currentData, decimal max, Criteria criteria)
         {
             var cb = new SqlConnectionStringBuilder();
+            DataTable dataCheck = new DataTable();
             cb.DataSource = "tcp:cis625.database.windows.net,1433";
             cb.UserID = "admin123";
             cb.Password = "Nimda123";
             cb.InitialCatalog = "625data";
 
-            string q = "Update Set ";
+            using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
+            {
+               
 
-            foreach (DataColumn col in currentData.Columns)
-                if (col.ColumnName != "AggregatedKey")
-                {
-                    q += curRows[col].GetType() == curRows["AggregatedKey"].GetType() ? col + "='" + curRows[col] + "'," : "";
-                    try
-                    {
-                        if (col.ColumnName == "value" || col.ColumnName == "sharesheld" || col.ColumnName == "percentagesharesheld")
-                            if (curRows[col.ColumnName].GetType() == curRows["AggregatedKey"].GetType())
-                                if (max == Convert.ToDecimal(curRows[col.ColumnName]))
-                                    q += col + "PastMax='" + curRows[col.ColumnName] + "',";
-                    }
-                    catch
-                    {
+                string oString = "Select * from Stocks.RunningData where CriteriaSet='" + criteria.Name + "'and AggKey='"+curRows["AggregatedKey"] +"'";
+                SqlCommand oCmd = new SqlCommand(oString, dbConnection);
 
+
+                // create data adapter
+                SqlDataAdapter da = new SqlDataAdapter(oCmd);
+                // this will query your database and return the result to your datatable
+                da.Fill(dataCheck);
+                
+                da.Dispose();
+            }
+
+            string q;
+
+
+           
+           
+            if (dataCheck.Rows.Count < 1)
+            {
+                q = "INSERT into stocks.runningdata (AggKey, CriteriaSet, StockCode, StockType, HolderID, HolderCountry, SharesHeld, SharesHeldPastMax, PercentageSharesHeld, PercentageSharesHeldPastMax, Direction, Value, ValuePastMax) " +
+                 "VALUES('" + curRows["AggregatedKey"] + "','" + criteria.Name + "','" + curRows["stockcode"] + "','" + curRows["stocktype"] + "','" + curRows["holderid"] + "','" + curRows["holdercountry"] + "','" + curRows["sharesheld"] + "','" + curRows["sharesheld"] + "','" + curRows["percentagesharesheld"] + "','" + curRows["percentagesharesheld"] + "','" + curRows["direction"] + "','" + curRows["value"] + "','" + curRows["value"] + "')";
+            }
+            else
+            {
+                q = "Update stock.runnigData  Set";
+                foreach (DataColumn col in currentData.Columns)
+                    if (col.ColumnName != "AggregatedKey")
+                    {
+                        q += curRows[col].GetType() == curRows["AggregatedKey"].GetType() ? col + "='" + curRows[col] + "'," : "";
+                        try
+                        {
+                            if (col.ColumnName == "value" || col.ColumnName == "sharesheld" || col.ColumnName == "percentagesharesheld")
+                                if (curRows[col.ColumnName].GetType() == curRows["AggregatedKey"].GetType())
+                                    if (max == Convert.ToDecimal(curRows[col.ColumnName]))
+                                        q += col + "PastMax='" + curRows[col.ColumnName] + "',";
+                        }
+                        catch
+                        {
+
+                        }
                     }
-                }
-            q = q.Substring(0, q.Length - 1);
-            
+                q = q.Substring(0, q.Length - 1);
+                q += "where criteriaSet='" + criteria.Name + "' and AggKey='" + curRows["AggregatedKey"] + "'";
+
+            }
+
             using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
             {
                 dbConnection.Open();
-                string query = string.Format("MERGE Stocks.RunningData as S using criteriafiltering.criteriasets as r ON (S.CriteriaSet = '" + criteria.Name + "' and S.AggKey = '" +curRows["AggregatedKey"] + "') WHEN Matched Then " +
-                    q +
-                    "when Not Matched Then INSERT (AggKey,CriteriaSet,StockCode,StockType,HolderID,HolderCountry,SharesHeld,SharesHeldPastMax,PercentageSharesHeld,PercentagesSharesHeldPastMax,Direction,Value,ValuePastMax) " +
-                    "VALUES('"+ curRows["AggregatedKey"] +"','" + criteria.Name+ "','" + curRows["stockcode"] + "','"+ curRows["stocktype"] + "','"+ curRows["holderid"] +"','"+ curRows["holdercountry"] + "','"+ curRows["sharesheld"] + "','" + curRows["sharesheld"] + "','"+ curRows["percentagesharesheld"] + "','" + curRows["percentagesharesheld"] + "','"+ curRows["direction"] + "','"+ curRows["value"] + "','" + curRows["value"] + "');"
-                    );
-                SqlCommand cmd = new SqlCommand(query, dbConnection);
+
+               
+                
+                SqlCommand cmd = new SqlCommand(q, dbConnection);
                 cmd.ExecuteNonQuery();
                 dbConnection.Close();
             }
