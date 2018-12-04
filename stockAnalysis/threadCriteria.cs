@@ -269,40 +269,13 @@ namespace stockAnalysis
                 }
 
 
-
-                string q = "Update stocks.runningdata Set ";
-
-                foreach (DataColumn col in currentData.Columns)
-                    if (col.ColumnName != "AggregatedKey")
-                    {
-                        q += curRows[col].GetType()==curRows["AggregatedKey"].GetType() ?col + "='" + curRows[col] + "',": "";
-                        try
-                        {
-                            if(col.ColumnName == "value"||col.ColumnName=="sharesheld"||col.ColumnName=="percentagesharesheld")
-                                if(curRows[col.ColumnName].GetType() == curRows["AggregatedKey"].GetType())
-                                if (max == Convert.ToDecimal(curRows[col.ColumnName]))
-                                    q += col + "PastMax='" + curRows[col.ColumnName] + "',";
-                        }
-                        catch
-                        {
-
-                        }
-                    }
-
-                q += " where criteriaSet = '" + criteria.Name + "' and aggkey='" + curRows["AggregatedKey"] + "'";
+                insertRunningInfo(curRows, currentData, max, criteria);
 
                 
                 oCmd = new SqlCommand(oString, myConnection);
-
-                
-
-
-
+               
 
             }
-
-
-
 
 
 
@@ -371,6 +344,51 @@ namespace stockAnalysis
 
         }
 
+
+        static void insertRunningInfo(DataRow curRows, DataTable currentData, decimal max, Criteria criteria)
+        {
+            var cb = new SqlConnectionStringBuilder();
+            cb.DataSource = "tcp:cis625.database.windows.net,1433";
+            cb.UserID = "admin123";
+            cb.Password = "Nimda123";
+            cb.InitialCatalog = "625data";
+
+            string q = "Update stocks.runningdata Set ";
+
+            foreach (DataColumn col in currentData.Columns)
+                if (col.ColumnName != "AggregatedKey")
+                {
+                    q += curRows[col].GetType() == curRows["AggregatedKey"].GetType() ? col + "='" + curRows[col] + "'," : "";
+                    try
+                    {
+                        if (col.ColumnName == "value" || col.ColumnName == "sharesheld" || col.ColumnName == "percentagesharesheld")
+                            if (curRows[col.ColumnName].GetType() == curRows["AggregatedKey"].GetType())
+                                if (max == Convert.ToDecimal(curRows[col.ColumnName]))
+                                    q += col + "PastMax='" + curRows[col.ColumnName] + "',";
+                    }
+                    catch
+                    {
+
+                    }
+                }
+
+            q += " where criteriaSet = '" + criteria.Name + "' and aggkey='" + curRows["AggregatedKey"] + "'";
+
+            using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
+            {
+                dbConnection.Open();
+                string query = string.Format("MERGE Stocks.RunningData S ON (S.CriteriaSet = " + criteria.Name + " and S.AggKey = " +curRows["AggregatedKey"] + ") WHEN Mathced Then " +
+                    q +
+                    "when Not Matched Then INSERT INTO Stocks.RunningData(AggKey,CriteriaSet,StockCode,StockType,HolderID,HolderCountry,SharesHeld,SharesHeldPastMax,PercentageSharesHeld,PercentagesSharesHeldPastMax,Direction,Value,ValuePastMax) " +
+                    "VALUES('"+ curRows["AggregatedKey"] +"','" + criteria.Name+ "','" + curRows["stockcode"] + "','"+ curRows["stocktype"] + "','"+ curRows["holderid"] +"','"+ curRows["holdercountry"] + "','"+ curRows["sharesheld"] + "','" + curRows["sharesheld"] + "','"+ curRows["percentagesharesheld"] + "','" + curRows["percentagesharesheld"] + "','"+ curRows["direction"] + "','"+ curRows["value"] + "','" + curRows["value"] + "',')"
+                    );
+                SqlCommand cmd = new SqlCommand(query, dbConnection);
+                cmd.ExecuteNonQuery();
+                dbConnection.Close();
+            }
+            
+
+        }
 
 
         static void writeCSV(DataTable currentData, List<string> columns, string step, string criteriaName)
