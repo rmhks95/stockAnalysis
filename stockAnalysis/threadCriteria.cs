@@ -232,8 +232,8 @@ namespace stockAnalysis
                 }
                 if (valueBroke!="")
                 {
-                    addFound.Columns.Add("threshold");
-                    curRows.Table.Columns.Add("threshold");
+                    if (!(addFound.Columns.Contains("threshold"))) addFound.Columns.Add("threshold");
+                    if (!(curRows.Table.Columns.Contains("threshold"))) curRows.Table.Columns.Add("threshold");
                     curRows["threshold"] = valueBroke;
                     addFound.ImportRow(curRows);
                     
