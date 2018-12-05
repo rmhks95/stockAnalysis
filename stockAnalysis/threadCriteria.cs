@@ -38,7 +38,14 @@ namespace stockAnalysis
             SqlConnection myConnection = new SqlConnection(cb.ConnectionString);
             myConnection.Open();
 
-            
+
+            using (SqlCommand myCmd = new SqlCommand("TRUNCATE TABLE TempTable", myConnection))
+            {
+                myCmd.CommandType = CommandType.Text;
+                myCmd.ExecuteNonQuery();
+            }
+
+
             Parallel.ForEach(list, (currentCriteria) =>
             {
                 //if(currentCriteria.Name =="82: Criteria Set 81(Short)")
