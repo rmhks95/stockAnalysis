@@ -29,23 +29,23 @@ namespace stockAnalysis
                 {
                     string path = file;
                     csvHandler.GetDataTabletFromCSVFile(path);
+
+                    var cb = new SqlConnectionStringBuilder();
+                    cb.DataSource = "tcp:cis625.database.windows.net,1433";
+                    cb.UserID = "admin123";
+                    cb.Password = "Nimda123";
+                    cb.InitialCatalog = "625data";
+                    cb.MultipleActiveResultSets = true;
+                    SqlConnection myConnection = new SqlConnection(cb.ConnectionString);
+                    myConnection.Open();
+
+                    using (SqlCommand myCmd = new SqlCommand("EXEC updateData", myConnection))
+                    {
+                        myCmd.CommandType = CommandType.Text;
+                        myCmd.CommandTimeout = 0;
+                        myCmd.ExecuteNonQuery();
+                    }
                 }
-            }
-
-            var cb = new SqlConnectionStringBuilder();
-            cb.DataSource = "tcp:cis625.database.windows.net,1433";
-            cb.UserID = "admin123";
-            cb.Password = "Nimda123";
-            cb.InitialCatalog = "625data";
-            cb.MultipleActiveResultSets = true;
-            SqlConnection myConnection = new SqlConnection(cb.ConnectionString);
-            myConnection.Open();
-
-            using (SqlCommand myCmd = new SqlCommand("EXEC updateData",myConnection))
-            {
-                myCmd.CommandType = CommandType.Text;
-                myCmd.CommandTimeout = 0;
-                myCmd.ExecuteNonQuery();
             }
             Close();
 
