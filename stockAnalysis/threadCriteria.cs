@@ -18,10 +18,7 @@ namespace stockAnalysis
         private const string EndpointUrl = "https://criteria.documents.azure.com:443/";
         private const string PrimaryKey = "eDNWOyfslnhfiiRjoUufC6ADHfcQwgXpB0e5sRCFil35hK4kwy2qU0LtSvBjuqm7BMqE2rt4xcWsOfxl2LrFPw==";
         private DocumentClient client;
-
-
-       
-
+      
 
         public static void Start(DataTable dt)
         {
@@ -406,80 +403,6 @@ namespace stockAnalysis
 
 
         }
-
-
-        /*static void insertRunningInfo(DataRow curRows, DataTable currentData, decimal max, Criteria criteria)
-        {
-            var cb = new SqlConnectionStringBuilder();
-            DataTable dataCheck = new DataTable();
-            cb.DataSource = "tcp:cis625.database.windows.net,1433";
-            cb.UserID = "admin123";
-            cb.Password = "Nimda123";
-            cb.InitialCatalog = "625data";
-
-            using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
-            {
-               
-
-                string oString = "Select * from Stocks.RunningData where CriteriaSet='" + criteria.Name + "'and AggKey='"+curRows["AggregatedKey"] +"'";
-                SqlCommand oCmd = new SqlCommand(oString, dbConnection);
-
-
-                // create data adapter
-                SqlDataAdapter da = new SqlDataAdapter(oCmd);
-                // this will query your database and return the result to your datatable
-                da.Fill(dataCheck);
-                
-                da.Dispose();
-            }
-
-            string q;
-
-
-            if (dataCheck.Rows.Count < 1)
-            {
-                q = "INSERT into stocks.runningdata (AggKey, CriteriaSet, StockCode, StockType, HolderID, HolderCountry, SharesHeld, SharesHeldPastMax, PercentageSharesHeld, PercentageSharesHeldPastMax, Direction, Value, ValuePastMax) " +
-                 "VALUES('" + curRows["AggregatedKey"] + "','" + criteria.Name + "','" + curRows["stockcode"] + "','" + curRows["stocktype"] + "','" + curRows["holderid"] + "','" + curRows["holdercountry"] + "','" + curRows["sharesheld"] + "','" + curRows["sharesheld"] + "','" + curRows["percentagesharesheld"] + "','" + curRows["percentagesharesheld"] + "','" + curRows["direction"] + "','" + curRows["value"] + "','" + curRows["value"] + "')";
-            }
-            else
-            {
-                q = "Update Stocks.RunningData Set ";
-                foreach (DataColumn col in currentData.Columns)
-                    if (col.ColumnName != "AggregatedKey" && col.ColumnName!="threshold")
-                    {
-                        if (curRows[col.ColumnName].ToString().Contains("'")) curRows[col.ColumnName].ToString().Replace("'", "''");
-                        q += curRows[col].GetType() == curRows["AggregatedKey"].GetType() ? col + "='" + curRows[col] + "'," : "";
-                        try
-                        {
-                            if (col.ColumnName == "value" || col.ColumnName == "sharesheld" || col.ColumnName == "percentagesharesheld")
-                                if (curRows[col.ColumnName].GetType() == curRows["AggregatedKey"].GetType())
-                                    if (max == Convert.ToDecimal(curRows[col.ColumnName]))
-                                        q += col + "PastMax='" + curRows[col.ColumnName] + "',";
-                        }
-                        catch
-                        {
-
-                        }
-                    }
-
-                q = q.Substring(0, q.Length - 1);
-                q += "where criteriaSet='" + criteria.Name + "' and AggKey='" + curRows["AggregatedKey"] + "'";
-
-            }
-
-            using (SqlConnection dbConnection = new SqlConnection(cb.ConnectionString))
-            {
-                dbConnection.Open();
-
-               
-                
-                SqlCommand cmd = new SqlCommand(q, dbConnection);
-                cmd.ExecuteNonQuery();
-                dbConnection.Close();
-            }
-            
-
-        }*/
 
 
         static void writeCSV(DataTable currentData, List<string> columns, string step, string criteriaName)

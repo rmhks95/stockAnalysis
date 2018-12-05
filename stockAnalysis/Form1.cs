@@ -50,5 +50,21 @@ namespace stockAnalysis
             Close();
 
         }
+
+        private void AddCriteria_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Multiselect = true;
+            if (openCriteriaDialog.ShowDialog() == DialogResult.OK)
+            {
+                foreach(String file in openCriteriaDialog.FileNames)
+                {
+                    string path = file;
+                    parseCriteria.ParseCriteria(path);
+        
+                }
+            }
+            
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace stockAnalysis
         [STAThread]
         static void Main()
         {
-            //parseCriteria.ParseCriteria();
+          
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

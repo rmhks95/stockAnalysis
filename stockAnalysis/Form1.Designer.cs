@@ -30,14 +30,15 @@
         {
             this.openFile = new System.Windows.Forms.Button();
             this.uxOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.AddCriteria = new System.Windows.Forms.Button();
+            this.openCriteriaDialog = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
             // openFile
             // 
-            this.openFile.Location = new System.Drawing.Point(640, 381);
-            this.openFile.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.openFile.Location = new System.Drawing.Point(320, 198);
             this.openFile.Name = "openFile";
-            this.openFile.Size = new System.Drawing.Size(150, 44);
+            this.openFile.Size = new System.Drawing.Size(75, 23);
             this.openFile.TabIndex = 0;
             this.openFile.Text = "File to open";
             this.openFile.UseVisualStyleBackColor = true;
@@ -49,13 +50,27 @@
             this.uxOpenFileDialog.Filter = "CSV Files (*.csv)|*csv";
             this.uxOpenFileDialog.Multiselect = true;
             // 
+            // AddCriteria
+            // 
+            this.AddCriteria.Location = new System.Drawing.Point(71, 198);
+            this.AddCriteria.Name = "AddCriteria";
+            this.AddCriteria.Size = new System.Drawing.Size(115, 28);
+            this.AddCriteria.TabIndex = 1;
+            this.AddCriteria.Text = "Add Criteria Set(s)";
+            this.AddCriteria.UseVisualStyleBackColor = true;
+            this.AddCriteria.Click += new System.EventHandler(this.AddCriteria_Click);
+            // 
+            // openCriteriaDialog
+            // 
+            this.openCriteriaDialog.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1416, 763);
+            this.ClientSize = new System.Drawing.Size(708, 397);
+            this.Controls.Add(this.AddCriteria);
             this.Controls.Add(this.openFile);
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
@@ -66,6 +81,8 @@
 
         private System.Windows.Forms.Button openFile;
         private System.Windows.Forms.OpenFileDialog uxOpenFileDialog;
+        private System.Windows.Forms.Button AddCriteria;
+        private System.Windows.Forms.OpenFileDialog openCriteriaDialog;
     }
 }
 

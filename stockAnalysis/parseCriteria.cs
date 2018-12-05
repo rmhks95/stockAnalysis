@@ -21,7 +21,7 @@ namespace stockAnalysis
         private DocumentClient client;
 
 
-        public static void ParseCriteria()
+        public static void ParseCriteria(string path)
         {
             var client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
             string line;
@@ -34,7 +34,7 @@ namespace stockAnalysis
             Post post = new Post();
             int index = 0;
 
-            System.IO.StreamReader file = new System.IO.StreamReader(@"C:\Users\Ryan\Documents\stockAnalysis\stockAnalysis\Criteria sets.txt"); 
+            System.IO.StreamReader file = new System.IO.StreamReader(path); 
             while ((line = file.ReadLine()) != null)
             {
                 if (!line.StartsWith("--"))
