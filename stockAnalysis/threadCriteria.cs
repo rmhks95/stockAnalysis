@@ -187,7 +187,7 @@ namespace stockAnalysis
                                 else
                                 {
                                     //not pass max
-                                 
+                                    curRows[name.column.Substring(0, 1).ToUpper() + name.column.Substring(1) + "PastMax"] = sqlRow[name.column];
                                 }
                             }
 
