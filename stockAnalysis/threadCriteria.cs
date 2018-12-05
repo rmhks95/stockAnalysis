@@ -39,7 +39,7 @@ namespace stockAnalysis
             myConnection.Open();
 
 
-            using (SqlCommand myCmd = new SqlCommand("TRUNCATE TABLE TempTable", myConnection))
+            using (SqlCommand myCmd = new SqlCommand("TRUNCATE TABLE stocks.TempTable", myConnection))
             {
                 myCmd.CommandType = CommandType.Text;
                 myCmd.ExecuteNonQuery();
