@@ -35,11 +35,17 @@ namespace stockAnalysis
             cb.Password = "Nimda123";
             cb.InitialCatalog = "625data";
             cb.MultipleActiveResultSets = true;
-            cb.ConnectTimeout = 30;
             SqlConnection myConnection = new SqlConnection(cb.ConnectionString);
             myConnection.Open();
-            Console.WriteLine("Connection timeout {0}", myConnection.ConnectionTimeout);
-            
+
+
+            using (SqlCommand myCmd = new SqlCommand("TRUNCATE TABLE TempTable", myConnection))
+            {
+                myCmd.CommandType = CommandType.Text;
+                myCmd.ExecuteNonQuery();
+            }
+
+
             Parallel.ForEach(list, (currentCriteria) =>
             {
                 //if(currentCriteria.Name =="82: Criteria Set 81(Short)")
