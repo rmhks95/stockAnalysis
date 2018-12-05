@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.openFile = new System.Windows.Forms.Button();
             this.uxOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.AddCriteria = new System.Windows.Forms.Button();
@@ -36,12 +37,18 @@
             // 
             // openFile
             // 
-            this.openFile.Location = new System.Drawing.Point(320, 198);
+            this.openFile.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.openFile.FlatAppearance.BorderSize = 0;
+            this.openFile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.openFile.Font = new System.Drawing.Font("Lato Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.openFile.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.openFile.Location = new System.Drawing.Point(25, 25);
+            this.openFile.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.openFile.Name = "openFile";
-            this.openFile.Size = new System.Drawing.Size(75, 23);
+            this.openFile.Size = new System.Drawing.Size(380, 85);
             this.openFile.TabIndex = 0;
-            this.openFile.Text = "File to open";
-            this.openFile.UseVisualStyleBackColor = true;
+            this.openFile.Text = "Aggregate File(s)";
+            this.openFile.UseVisualStyleBackColor = false;
             this.openFile.Click += new System.EventHandler(this.openFile_Click);
             // 
             // uxOpenFileDialog
@@ -52,12 +59,18 @@
             // 
             // AddCriteria
             // 
-            this.AddCriteria.Location = new System.Drawing.Point(71, 198);
+            this.AddCriteria.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.AddCriteria.FlatAppearance.BorderSize = 0;
+            this.AddCriteria.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.AddCriteria.Font = new System.Drawing.Font("Lato Semibold", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AddCriteria.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.AddCriteria.Location = new System.Drawing.Point(25, 135);
+            this.AddCriteria.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.AddCriteria.Name = "AddCriteria";
-            this.AddCriteria.Size = new System.Drawing.Size(115, 28);
+            this.AddCriteria.Size = new System.Drawing.Size(380, 85);
             this.AddCriteria.TabIndex = 1;
             this.AddCriteria.Text = "Add Criteria Set(s)";
-            this.AddCriteria.UseVisualStyleBackColor = true;
+            this.AddCriteria.UseVisualStyleBackColor = false;
             this.AddCriteria.Click += new System.EventHandler(this.AddCriteria_Click);
             // 
             // openCriteriaDialog
@@ -66,13 +79,19 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(708, 397);
+            this.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.ClientSize = new System.Drawing.Size(429, 244);
             this.Controls.Add(this.AddCriteria);
             this.Controls.Add(this.openFile);
+            this.Font = new System.Drawing.Font("Lato Semibold", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.RightToLeftLayout = true;
+            this.Text = "Stock Analysis";
             this.ResumeLayout(false);
 
         }
