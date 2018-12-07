@@ -33,6 +33,12 @@ namespace stockAnalysis
             myConnection.Open();
 
 
+            using (SqlCommand myCmd = new SqlCommand("SET XACT_ABORT ON", myConnection))
+            {
+                myCmd.CommandType = CommandType.Text;
+                myCmd.ExecuteNonQuery();
+            }
+
             using (SqlCommand myCmd = new SqlCommand("TRUNCATE TABLE stocks.TempTable", myConnection))
             {
                 myCmd.CommandType = CommandType.Text;
@@ -312,11 +318,7 @@ namespace stockAnalysis
             //}
 
 
-            using (SqlCommand myCmd = new SqlCommand("SET XACT_ABORT ON", myConnection))
-            {
-                myCmd.CommandType = CommandType.Text;
-                myCmd.ExecuteNonQuery();
-            }
+            
 
             SqlBulkCopy bulkCopy = new SqlBulkCopy(myConnection);
             bulkCopy.ColumnMappings.Add("stockcode", "StockCode");
@@ -332,6 +334,8 @@ namespace stockAnalysis
             bulkCopy.ColumnMappings.Add("SharesHeldPastMax", "SharesHeldPastMax");
             bulkCopy.ColumnMappings.Add("PercentageSharesHeldPastMax", "PercentageSharesHeldPastMax");
             bulkCopy.ColumnMappings.Add("ValuePastMax", "ValuePastMax");
+
+            bulkCopy.BatchSize = 10000; //Play with this for how many to upload at a time
 
             bulkCopy.DestinationTableName = "stocks.temptable";
 
