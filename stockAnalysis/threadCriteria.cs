@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents.Linq;
-using System.Threading;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
@@ -45,7 +42,7 @@ namespace stockAnalysis
 
             Parallel.ForEach(list, (currentCriteria) =>
             {
-                //if(currentCriteria.Name =="82: Criteria Set 81(Short)")
+                if(currentCriteria.Name =="82: Criteria Set 81(Short)")
                 Plinkq(currentCriteria, dt,myConnection);
 
             });
