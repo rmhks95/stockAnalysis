@@ -121,7 +121,7 @@ namespace stockAnalysis
             currentData.Columns.Add("ValuePastMax");
             foreach (DataRow curRows in currentData.Rows)
             {
-                //curRows["Criteria"] = criteria.Name;
+                curRows["Criteria"] = criteria.Name;
                 dataFromSQL.PrimaryKey = new DataColumn[] { dataFromSQL.Columns["AggKey"] };
                 string key = curRows.Field<string>("AggregatedKey");
                 decimal max=0;
@@ -265,7 +265,7 @@ namespace stockAnalysis
                 }*/
 
 
-                oCmd = new SqlCommand(oString, myConnection);
+                //oCmd = new SqlCommand(oString, myConnection);
                
 
             }
@@ -278,67 +278,78 @@ namespace stockAnalysis
             //StringBuilder sCommand = new StringBuilder("Insert Into stocks.temptable VALUES");
             //List<string> Rows = new List<string>();
             //foreach (DataRow row in currentData.Rows)
-            var calc = currentData.Rows.Count / 1000;
-                for (int j = 0; j<calc+1;j++)
-                {
-                    
-                    StringBuilder sCommand = new StringBuilder("Insert Into stocks.temptable VALUES");
-                    List<string> Rows = new List<string>();
-                    for (int i = 0; i <1000; i++)
-                    {
-                        int counter = (j * 1000) + i;
-                        if (currentData.Rows.Count <= counter) { break; }
-
-                        if (currentData.Rows[counter][3].ToString().Contains("'"))
-                            currentData.Rows[counter][3] = currentData.Rows[counter][3].ToString().Replace("'", "''");
-
-                        Rows.Add(string.Format("('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}')", currentData.Rows[counter][0], currentData.Rows[counter][1], currentData.Rows[counter][2], currentData.Rows[counter][3], currentData.Rows[counter][4], currentData.Rows[counter][5], currentData.Rows[counter][6], currentData.Rows[counter][7], currentData.Rows[counter][8], criteria.Name, currentData.Rows[counter][10], currentData.Rows[counter][11], currentData.Rows[counter][12]));
-                        
-                    }
-                    if (Rows.Count != 0) {
-                        sCommand.Append(string.Join(",", Rows));
-                        sCommand.Append(";");
-                        //myConnection.Open();
-                        using (SqlCommand myCmd = new SqlCommand(sCommand.ToString(), myConnection))
-                        {
-                            myCmd.CommandType = CommandType.Text;
-                            myCmd.ExecuteNonQuery();
-                        }
-                    }
-                }
-
-
-                //SqlBulkCopy bulkCopy = new SqlBulkCopy(myConnection);
-                //bulkCopy.ColumnMappings.Add("stockcode", "StockCode");
-                //bulkCopy.ColumnMappings.Add("stocktype", "StockType");
-                //bulkCopy.ColumnMappings.Add("holderid", "HolderID");
-                //bulkCopy.ColumnMappings.Add("holdercountry", "HolderCountry");
-                //bulkCopy.ColumnMappings.Add("sharesheld", "SharesHeld");
-                //bulkCopy.ColumnMappings.Add("percentagesharesheld", "PercentageSharesHeld");
-                //bulkCopy.ColumnMappings.Add("direction", "Direction");
-                //bulkCopy.ColumnMappings.Add("value", "Value");
-                //bulkCopy.ColumnMappings.Add("Criteria", "CriteriaSet");
-                //bulkCopy.ColumnMappings.Add("AggregatedKey", "AggKey");
-                //bulkCopy.ColumnMappings.Add("SharesHeldPastMax", "SharesHeldPastMax");
-                //bulkCopy.ColumnMappings.Add("PercentageSharesHeldPastMax", "PercentageSharesHeldPastMax");
-                //bulkCopy.ColumnMappings.Add("ValuePastMax", "ValuePastMax");
-
-                //bulkCopy.DestinationTableName = "stocks.temptable";
-
-                //bulkCopy.WriteToServer(currentData);
 
 
 
+            //var calc = currentData.Rows.Count / 1000;
+            //for (int j = 0; j < calc + 1; j++)
+            //{
+
+            //    StringBuilder sCommand = new StringBuilder("Insert Into stocks.temptable VALUES");
+            //    List<string> Rows = new List<string>();
+            //    for (int i = 0; i < 1000; i++)
+            //    {
+            //        int counter = (j * 1000) + i;
+            //        if (currentData.Rows.Count <= counter) { break; }
+
+            //        if (currentData.Rows[counter][3].ToString().Contains("'"))
+            //            currentData.Rows[counter][3] = currentData.Rows[counter][3].ToString().Replace("'", "''");
+
+            //        Rows.Add(string.Format("('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}')", currentData.Rows[counter][0], currentData.Rows[counter][1], currentData.Rows[counter][2], currentData.Rows[counter][3], currentData.Rows[counter][4], currentData.Rows[counter][5], currentData.Rows[counter][6], currentData.Rows[counter][7], currentData.Rows[counter][8], criteria.Name, currentData.Rows[counter][10], currentData.Rows[counter][11], currentData.Rows[counter][12]));
+
+            //    }
+            //    if (Rows.Count != 0)
+            //    {
+            //        sCommand.Append(string.Join(",", Rows));
+            //        sCommand.Append(";");
+            //        //myConnection.Open();
+            //        using (SqlCommand myCmd = new SqlCommand(sCommand.ToString(), myConnection))
+            //        {
+            //            myCmd.CommandType = CommandType.Text;
+            //            myCmd.ExecuteNonQuery();
+            //        }
+            //    }
+            //}
+
+
+            using (SqlCommand myCmd = new SqlCommand("SET XACT_ABORT ON", myConnection))
+            {
+                myCmd.CommandType = CommandType.Text;
+                myCmd.ExecuteNonQuery();
+            }
+
+            SqlBulkCopy bulkCopy = new SqlBulkCopy(myConnection);
+            bulkCopy.ColumnMappings.Add("stockcode", "StockCode");
+            bulkCopy.ColumnMappings.Add("stocktype", "StockType");
+            bulkCopy.ColumnMappings.Add("holderid", "HolderID");
+            bulkCopy.ColumnMappings.Add("holdercountry", "HolderCountry");
+            bulkCopy.ColumnMappings.Add("sharesheld", "SharesHeld");
+            bulkCopy.ColumnMappings.Add("percentagesharesheld", "PercentageSharesHeld");
+            bulkCopy.ColumnMappings.Add("direction", "Direction");
+            bulkCopy.ColumnMappings.Add("value", "Value");
+            bulkCopy.ColumnMappings.Add("Criteria", "CriteriaSet");
+            bulkCopy.ColumnMappings.Add("AggregatedKey", "AggKey");
+            bulkCopy.ColumnMappings.Add("SharesHeldPastMax", "SharesHeldPastMax");
+            bulkCopy.ColumnMappings.Add("PercentageSharesHeldPastMax", "PercentageSharesHeldPastMax");
+            bulkCopy.ColumnMappings.Add("ValuePastMax", "ValuePastMax");
+
+            bulkCopy.DestinationTableName = "stocks.temptable";
+
+
+            bulkCopy.WriteToServer(currentData);
 
 
 
-                //}
+
+
+
+            //}
 
 
 
 
 
-                var printMe = addFound.Copy();
+            var printMe = addFound.Copy();
             writeCSV(printMe, null, "PostAggDetails", criteria.Name);
             printMe = addFound.Copy();
             var list = criteria.agSum.Split(',').ToList();
